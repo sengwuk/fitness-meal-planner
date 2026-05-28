@@ -1561,10 +1561,27 @@
     }
 
     .lead-status {
-      min-height: 18px;
+      min-height: 44px;
+      border: 1px solid rgba(255, 255, 255, .24);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, .12);
       color: rgba(255, 255, 255, .92);
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .lead-status.success {
+      border-color: rgba(187, 247, 208, .85);
+      background: rgba(22, 101, 52, .35);
+      color: #ecfdf5;
+    }
+
+    .lead-status.error {
+      border-color: rgba(254, 202, 202, .9);
+      background: rgba(127, 29, 29, .32);
+      color: #fff7ed;
     }
 
     .upgrade-grid {
@@ -2968,6 +2985,18 @@
       setSelectedSupplements([...selectedSupplements, value]);
     }
 
+    function setLeadStatus(message, state = "") {
+      leadStatus.textContent = message;
+      leadStatus.classList.toggle("success", state === "success");
+      leadStatus.classList.toggle("error", state === "error");
+    }
+
+    function setLeadButton(button, text, disabled) {
+      if (!button) return;
+      button.disabled = disabled;
+      button.innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>${escapeHtml(text)}`;
+    }
+
     function setFormError(message) {
       formError.textContent = message;
       formError.classList.toggle("show", Boolean(message));
@@ -4158,21 +4187,22 @@
         planGoal: currentPlan ? currentPlan.targets.goalLabel : "未生成方案"
       };
       if (!String(lead.contact).trim() || lead.contact === "未填写联系方式") {
-        leadStatus.textContent = "请先填写联系方式，方便后续发送详细版食谱。";
+        setLeadStatus("请先填写联系方式，方便后续发送详细版食谱。", "error");
         return;
       }
 
       const submitButton = leadForm.querySelector("button[type='submit']");
-      if (submitButton) {
-        submitButton.disabled = true;
-        submitButton.textContent = "正在提交...";
-      }
-      leadStatus.textContent = "正在提交，请稍等。";
+      setLeadButton(submitButton, "正在提交...", true);
+      setLeadStatus("正在提交，请稍等。");
 
       try {
         await submitLeadToBackend(lead);
-        leadStatus.textContent = `已提交成功：${lead.name} / ${lead.need}。后续会按这个联系方式通知你。`;
+        setLeadStatus(`已提交成功：${lead.name} / ${lead.need}。后续会按这个联系方式通知你。`, "success");
         leadForm.reset();
+        setLeadButton(submitButton, "已提交成功", true);
+        window.setTimeout(() => {
+          setLeadButton(submitButton, "提交领取需求", false);
+        }, 3500);
       } catch (error) {
         let leads = [];
         try {
@@ -4183,13 +4213,9 @@
         }
         leads.push(lead);
         saveLocal("fitMealPlannerLeads", JSON.stringify(leads));
-        leadStatus.textContent = `暂时没有连上云端，已先保存在本机。请截图或稍后再试：${lead.name} / ${lead.need}`;
+        setLeadStatus(`暂时没有连上云端，已先保存在本机。请截图或稍后再试：${lead.name} / ${lead.need}`, "error");
         leadForm.reset();
-      } finally {
-        if (submitButton) {
-          submitButton.disabled = false;
-          submitButton.innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>提交领取需求`;
-        }
+        setLeadButton(submitButton, "提交领取需求", false);
       }
     });
 
