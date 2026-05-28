@@ -2658,7 +2658,7 @@
           <div class="card-head">
             <div>
               <h2>领取详细版食谱</h2>
-              <p id="leadCopy">免费版包含基础食谱、运动日切换、换餐和打卡。下面是详细版方向预览，未开放的内容不会直接显示。</p>
+              <p id="leadCopy">免费版包含基础食谱、运动日切换、换餐和打卡。这里是留下联系方式，不会立刻解锁付费内容。</p>
             </div>
           </div>
           <div class="card-body">
@@ -2701,11 +2701,11 @@
             <div class="field" style="align-self:end;">
               <button class="btn" type="submit">
                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
-                领取详细版食谱
+                留下联系方式
               </button>
             </div>
             <div class="field full">
-              <div class="lead-status" id="leadStatus">留下联系方式后，后续可以优先收到详细版计划。</div>
+              <div class="lead-status" id="leadStatus">填写联系方式后点击提交，我会后续联系你发送详细版计划。</div>
             </div>
           </form>
         </article>
@@ -3957,7 +3957,7 @@
       renderPaidPreview();
       renderList(howToEat, buildHowToEat(data, targets));
       renderCheckins();
-      leadCopy.textContent = "免费版已生成基础食谱、运动日切换、换餐和打卡。7-14 天详细计划、外卖替换和趋势调整属于后续详细版。";
+      leadCopy.textContent = "免费版已生成基础食谱、运动日切换、换餐和打卡。这里是留下联系方式，后续再领取 7-14 天详细计划。";
       saveLocal("fitMealPlannerLast", JSON.stringify({ ...data, generatedAt: Date.now() }));
       setStep(2);
       showPage("result");
@@ -4162,9 +4162,16 @@
         return;
       }
 
+      const submitButton = leadForm.querySelector("button[type='submit']");
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "正在提交...";
+      }
+      leadStatus.textContent = "正在提交，请稍等。";
+
       try {
         await submitLeadToBackend(lead);
-        leadStatus.textContent = `已提交领取需求：${lead.name} / ${lead.need}`;
+        leadStatus.textContent = `已提交成功：${lead.name} / ${lead.need}。后续会按这个联系方式通知你。`;
         leadForm.reset();
       } catch (error) {
         let leads = [];
@@ -4176,8 +4183,13 @@
         }
         leads.push(lead);
         saveLocal("fitMealPlannerLeads", JSON.stringify(leads));
-        leadStatus.textContent = `后端未连接，领取需求已暂存在这台设备：${lead.name} / ${lead.need}`;
+        leadStatus.textContent = `暂时没有连上云端，已先保存在本机。请截图或稍后再试：${lead.name} / ${lead.need}`;
         leadForm.reset();
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>留下联系方式`;
+        }
       }
     });
 
