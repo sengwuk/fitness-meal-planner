@@ -1,0 +1,4201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FitMeal 减脂增肌食谱规划器</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8f7;
+      --surface: #ffffff;
+      --surface-2: #eef4f1;
+      --surface-3: #e4f7ef;
+      --text: #17211c;
+      --muted: #66736d;
+      --line: #dde5e1;
+      --line-strong: #b8c7c1;
+      --primary: #0f766e;
+      --primary-dark: #0b4f4a;
+      --primary-soft: #ddf7f1;
+      --accent: #84cc16;
+      --accent-soft: #ecfccb;
+      --warning: #f59e0b;
+      --warning-soft: #fef3c7;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --shadow: 0 18px 52px rgba(15, 118, 110, .12);
+      --radius: 8px;
+      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(135deg, rgba(15, 118, 110, .12), transparent 28%),
+        linear-gradient(315deg, rgba(132, 204, 22, .14), transparent 34%),
+        radial-gradient(circle at 78% 10%, rgba(14, 165, 233, .08), transparent 28%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    body,
+    button,
+    input,
+    select,
+    textarea {
+      font: 17px/1.55 "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1480px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 65% 24%, #fff 0 8px, transparent 9px),
+        linear-gradient(135deg, var(--primary) 0 52%, var(--accent) 52% 100%);
+      box-shadow: 0 12px 24px rgba(15, 118, 110, .20);
+      flex: 0 0 auto;
+      position: relative;
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      background: rgba(255, 255, 255, .9);
+    }
+
+    .brand-mark::before {
+      width: 22px;
+      height: 5px;
+      left: 8px;
+      bottom: 13px;
+      border-radius: 999px;
+      transform: rotate(-18deg);
+    }
+
+    .brand-mark::after {
+      width: 5px;
+      height: 22px;
+      left: 16px;
+      bottom: 5px;
+      border-radius: 999px;
+      transform: rotate(-18deg);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(30px, 3.4vw, 44px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .welcome-shell {
+      min-height: calc(100vh - 128px);
+      display: grid;
+      place-items: center;
+      padding: 22px 0 42px;
+    }
+
+    .welcome-panel {
+      width: min(860px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .92);
+      box-shadow: var(--shadow);
+      padding: clamp(26px, 5vw, 58px);
+      display: grid;
+      gap: 22px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .welcome-logo {
+      width: 112px;
+      height: 112px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 65% 24%, #fff 0 18px, transparent 19px),
+        linear-gradient(135deg, var(--primary) 0 52%, var(--accent) 52% 100%);
+      box-shadow: 0 20px 42px rgba(15, 118, 110, .24);
+      position: relative;
+    }
+
+    .welcome-logo::before,
+    .welcome-logo::after {
+      content: "";
+      position: absolute;
+      background: rgba(255, 255, 255, .92);
+      border-radius: 999px;
+      transform: rotate(-18deg);
+    }
+
+    .welcome-logo::before {
+      width: 54px;
+      height: 12px;
+      left: 20px;
+      bottom: 32px;
+    }
+
+    .welcome-logo::after {
+      width: 12px;
+      height: 54px;
+      left: 40px;
+      bottom: 15px;
+    }
+
+    .welcome-copy {
+      display: grid;
+      gap: 12px;
+      max-width: 680px;
+    }
+
+    .welcome-copy h2 {
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .welcome-copy p {
+      color: #40534d;
+      font-size: clamp(19px, 2.2vw, 24px);
+      line-height: 1.65;
+    }
+
+    .welcome-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .welcome-actions .btn {
+      min-height: 56px;
+      padding: 12px 22px;
+      font-size: 19px;
+    }
+
+    .welcome-points {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .welcome-points span {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(247, 250, 246, .86);
+      padding: 12px;
+      color: var(--primary-dark);
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+      animation: pageIn .22s ease both;
+    }
+
+    #startPage.active {
+      min-height: calc(100vh - 128px);
+      display: grid;
+      align-items: center;
+    }
+
+    @keyframes pageIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .btn {
+      min-height: 46px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 10px 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--primary);
+      box-shadow: 0 10px 24px rgba(25, 45, 34, .10);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .btn.primary:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+    }
+
+    .btn.ghost {
+      background: transparent;
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex: 0 0 auto;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(330px, 440px) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .start-shell {
+      width: min(1080px, 100%);
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, .88);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .input-panel {
+      position: sticky;
+      top: 18px;
+      overflow: hidden;
+    }
+
+    .start-shell .input-panel {
+      position: static;
+    }
+
+    .page-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .page-title {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .page-title h2 {
+      font-size: clamp(28px, 3vw, 40px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .page-title p {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .training-volume-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .training-volume-card {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .training-volume-card h5 {
+      margin: 0;
+      color: #253a33;
+      font-size: 15px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .training-volume-pair {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .training-volume-grid .field {
+      gap: 5px;
+    }
+
+    .training-volume-grid label {
+      font-size: 14px;
+    }
+
+    .training-volume-grid input {
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .rest-day-note {
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: rgba(247, 250, 246, .86);
+      padding: 8px 10px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+    }
+
+    .rest-day-note strong {
+      color: #253a33;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    .rest-day-note span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .optional-details {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(247, 250, 246, .72);
+      padding: 9px;
+    }
+
+    .optional-details summary {
+      cursor: pointer;
+      color: #253a33;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .optional-details[open] {
+      display: grid;
+      gap: 9px;
+    }
+
+    .panel-head {
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(255, 255, 255, .76));
+    }
+
+    .panel-head h2 {
+      font-size: 24px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .panel-head p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .wizard-progress {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      padding: 14px 18px 0;
+    }
+
+    .progress-step {
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .progress-step b {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--surface-2);
+      color: var(--primary-dark);
+      flex: 0 0 auto;
+      font-size: 12px;
+    }
+
+    .progress-step.active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    .progress-step.done b {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .form {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .form.compact-active {
+      padding: 12px;
+      gap: 10px;
+    }
+
+    .form.compact-active > .notice {
+      display: none;
+    }
+
+    .wizard-step {
+      display: none;
+      gap: 16px;
+    }
+
+    .wizard-step.active {
+      display: grid;
+      animation: stepIn .22s ease both;
+    }
+
+    .wizard-step.compact-step.active {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+
+    .compact-step .step-title {
+      grid-column: 1 / -1;
+      align-items: center;
+      margin-bottom: -2px;
+    }
+
+    .compact-step .compact-workout {
+      grid-column: 1 / -1;
+    }
+
+    .compact-step .step-title h3 {
+      font-size: 24px;
+    }
+
+    .compact-step .step-title p,
+    .compact-step .hint {
+      display: none;
+    }
+
+    .compact-step .level-badge {
+      display: none;
+    }
+
+    .compact-step .setup-block {
+      padding: 8px;
+      gap: 7px;
+    }
+
+    .compact-step .setup-block-title h4,
+    .compact-step .selected-pantry h4,
+    .compact-step .pantry-select-card h4 {
+      font-size: 16px;
+    }
+
+    .compact-step .pantry-select-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .compact-step .pantry-select-card {
+      padding: 9px;
+      gap: 6px;
+    }
+
+    .compact-step input,
+    .compact-step select,
+    .compact-step textarea {
+      min-height: 38px;
+      padding: 7px 9px;
+      font-size: 15px;
+    }
+
+    .compact-step textarea {
+      min-height: 54px;
+    }
+
+    .compact-step .selected-pantry {
+      padding: 9px;
+      gap: 7px;
+    }
+
+    .compact-step .tag-cloud {
+      max-height: 62px;
+      overflow: hidden;
+    }
+
+    .compact-step .food-token,
+    .compact-step .chip-check span {
+      min-height: 30px;
+      padding: 5px 9px;
+      font-size: 14px;
+    }
+
+    .compact-step .mini-selects {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .compact-step .confirm-box {
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      padding: 0;
+      align-self: stretch;
+    }
+
+    .compact-step .confirm-box label:first-child {
+      display: none;
+    }
+
+    .compact-step .form-actions {
+      align-self: stretch;
+      margin: 0;
+    }
+
+    .compact-step .form-actions .btn {
+      min-height: 54px;
+    }
+
+    @keyframes stepIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .step-title {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .step-title h3 {
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .step-title p {
+      color: var(--muted);
+      font-size: 15px;
+      margin-top: 4px;
+    }
+
+    .level-badge {
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: var(--accent-soft);
+      color: #3f6212;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #253a33;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #fff;
+      min-height: 48px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color .16s ease, box-shadow .16s ease;
+    }
+
+    textarea {
+      min-height: 118px;
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, .16);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 5px;
+    }
+
+    .segmented input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .segmented label {
+      min-height: 38px;
+      padding: 8px 6px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 15px;
+      color: var(--muted);
+      transition: background .16s ease, color .16s ease, box-shadow .16s ease;
+      cursor: pointer;
+    }
+
+    .segmented input:checked + label {
+      background: var(--surface);
+      color: var(--primary);
+      box-shadow: 0 6px 16px rgba(15, 118, 110, .10);
+    }
+
+    .goal-cards {
+      display: grid;
+      gap: 10px;
+    }
+
+    .goal-card {
+      display: block;
+      cursor: pointer;
+    }
+
+    .goal-card input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .goal-body {
+      min-height: 96px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .goal-body strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1.2;
+      letter-spacing: 0;
+      margin-bottom: 4px;
+    }
+
+    .goal-body span {
+      display: block;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .goal-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--surface-2);
+      color: var(--primary);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .goal-card input:checked + .goal-body {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, var(--primary-soft), #fff);
+      box-shadow: 0 12px 26px rgba(15, 118, 110, .16);
+      transform: translateY(-1px);
+    }
+
+    .goal-card input:checked + .goal-body .goal-icon {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .checks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip-check input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .chip-check span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 34px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color .16s ease, background .16s ease, color .16s ease;
+    }
+
+    .chip-check input:checked + span {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    .pantry-groups {
+      display: grid;
+      gap: 12px;
+    }
+
+    .setup-block {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .82);
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .setup-block-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .setup-block-title h4 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .setup-block-title span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pantry-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .pantry-group h4 {
+      margin: 0;
+      font-size: 16px;
+      color: #253a33;
+      letter-spacing: 0;
+    }
+
+    .pantry-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pantry-select-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .pantry-select-card {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 12px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .pantry-select-card h4 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .select-action {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+
+    .selected-pantry {
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: rgba(247, 250, 246, .84);
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .selected-pantry h4 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    .food-token {
+      border: 1px solid #a7d8cf;
+      background: #f0fdfa;
+      color: var(--primary-dark);
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 36px;
+      padding: 7px 10px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .food-token button {
+      width: 22px;
+      height: 22px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(15, 118, 110, .12);
+      color: var(--primary-dark);
+      display: grid;
+      place-items: center;
+      padding: 0;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .mini-selects {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: 10px;
+    }
+
+    .quick-preset {
+      max-width: 220px;
+    }
+
+    .form-error {
+      display: none;
+      border: 1px solid #fecaca;
+      background: var(--danger-soft);
+      color: var(--danger);
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .form-error.show {
+      display: block;
+    }
+
+    .confirm-box {
+      border: 2px solid var(--accent);
+      background: linear-gradient(135deg, var(--accent-soft), #fff);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: 0 14px 28px rgba(132, 204, 22, .14);
+    }
+
+    .confirm-box label {
+      color: #3f6212;
+      font-size: 17px;
+    }
+
+    .confirm-box .chip-check span {
+      min-height: 42px;
+      border-color: #a3e635;
+      background: var(--accent-soft);
+      color: #3f6212;
+      font-size: 16px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(33, 28, 24, .42);
+      z-index: 30;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal {
+      width: min(460px, 100%);
+      border-radius: 8px;
+      border: 1px solid var(--line-strong);
+      background: var(--surface);
+      box-shadow: 0 24px 70px rgba(33, 28, 24, .28);
+      padding: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .modal h2 {
+      font-size: 24px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .modal p {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .replace-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .replace-options .btn {
+      min-height: 58px;
+      white-space: normal;
+      line-height: 1.25;
+    }
+
+    .form-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding-top: 4px;
+    }
+
+    .result {
+      display: grid;
+      gap: 18px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      border: 1px solid rgba(184, 199, 193, .82);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(15, 118, 110, .98), rgba(11, 79, 74, .96)),
+        var(--primary);
+      box-shadow: 0 18px 48px rgba(15, 118, 110, .18);
+      overflow: hidden;
+    }
+
+    .metric {
+      background: transparent;
+      border: 0;
+      border-right: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 0;
+      padding: 18px;
+      min-height: 118px;
+      box-shadow: none;
+      display: grid;
+      align-content: space-between;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .metric:last-child {
+      border-right: 0;
+    }
+
+    .metric span {
+      color: rgba(255, 255, 255, .72);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .metric strong {
+      color: #fff;
+      font-size: clamp(25px, 2.6vw, 36px);
+      line-height: 1.05;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .metric small {
+      color: rgba(255, 255, 255, .64);
+      font-size: 14px;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(270px, .88fr);
+      gap: 18px;
+    }
+
+    .dashboard > .card:only-child {
+      grid-column: 1 / -1;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, .92);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 12px 30px rgba(25, 45, 34, .08);
+      overflow: hidden;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .card-head h2,
+    .card-head h3 {
+      font-size: 22px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .card-head p {
+      color: var(--muted);
+      font-size: 15px;
+      margin-top: 3px;
+    }
+
+    .card-body {
+      padding: 16px;
+    }
+
+    .macro-bars {
+      display: grid;
+      gap: 14px;
+    }
+
+    .bar-row {
+      display: grid;
+      gap: 7px;
+    }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: #253a33;
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: #dbe7e2;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--primary);
+      width: var(--w, 50%);
+    }
+
+    .bar-row:nth-child(2) .bar span {
+      background: var(--accent);
+    }
+
+    .bar-row:nth-child(3) .bar span {
+      background: #0ea5e9;
+    }
+
+    .plate {
+      display: grid;
+      gap: 12px;
+    }
+
+    .plate-visual {
+      aspect-ratio: 1 / 1;
+      width: min(230px, 100%);
+      margin: 0 auto;
+      border-radius: 50%;
+      border: 11px solid #fff;
+      box-shadow: inset 0 0 0 1px var(--line-strong), 0 18px 32px rgba(25, 45, 34, .11);
+      background:
+        conic-gradient(
+          #0f766e 0 var(--veg, 42%),
+          #84cc16 var(--veg, 42%) calc(var(--veg, 42%) + var(--carb, 28%)),
+          #0ea5e9 calc(var(--veg, 42%) + var(--carb, 28%)) 100%
+        );
+      position: relative;
+    }
+
+    .plate-visual::after {
+      content: "";
+      position: absolute;
+      inset: 29%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .82);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, .85);
+    }
+
+    .legend {
+      display: grid;
+      gap: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .legend-item b {
+      color: var(--text);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 7px;
+      background: var(--primary);
+    }
+
+    .dot.carb {
+      background: var(--accent);
+    }
+
+    .dot.protein {
+      background: #0ea5e9;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 7px 11px;
+      min-height: 34px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .tab.active {
+      border-color: var(--primary);
+      color: #fff;
+      background: var(--primary);
+    }
+
+    .meal-mode-switch {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .meal-mode-switch .tabs {
+      gap: 9px;
+    }
+
+    .meal-mode-switch .tab {
+      min-height: 40px;
+      padding: 8px 13px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .mode-note {
+      border: 1px solid #a7d8cf;
+      border-radius: 8px;
+      background: #f0fdfa;
+      color: var(--primary-dark);
+      padding: 10px 12px;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .meal-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .meal-table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .meal-table th,
+    .meal-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .meal-table th {
+      background: rgba(247, 250, 246, .96);
+      color: #253a33;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .meal-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .meal-table .meal-time {
+      width: 82px;
+      color: var(--primary-dark);
+      font-weight: 900;
+    }
+
+    .meal-table .meal-title {
+      display: block;
+      color: var(--text);
+      font-size: 17px;
+      line-height: 1.35;
+      margin-bottom: 6px;
+    }
+
+    .meal-table .meal-note {
+      display: block;
+      color: var(--muted);
+      margin-top: 7px;
+      font-size: 14px;
+    }
+
+    .meal-table .meal-visual {
+      display: block;
+      color: #2f5f46;
+      margin-top: 8px;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1.45;
+    }
+
+    .meal-table .meal-kcal {
+      color: #3f6212;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .replace-meal-btn {
+      min-height: 38px;
+      padding: 7px 10px;
+      font-size: 14px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .info-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .info-list li {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr);
+      gap: 9px;
+      color: #40534d;
+      font-size: 16px;
+    }
+
+    .info-list li::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      margin-top: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .tag-cloud {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 6px 9px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .tag.good {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      border-color: #99f6e4;
+    }
+
+    .tag.warn {
+      background: var(--warning-soft);
+      color: #92400e;
+      border-color: #fcd34d;
+    }
+
+    .tag.bad {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border-color: #fecaca;
+    }
+
+    .lead-card {
+      background:
+        linear-gradient(135deg, rgba(15, 118, 110, .98), rgba(11, 79, 74, .98)),
+        var(--primary);
+      color: #fff;
+      border: 0;
+    }
+
+    .lead-card .card-head {
+      border-color: rgba(255, 255, 255, .18);
+    }
+
+    .lead-card p,
+    .lead-card label,
+    .lead-card .hint {
+      color: rgba(255, 255, 255, .76);
+    }
+
+    .lead-card input,
+    .lead-card select {
+      border-color: rgba(255, 255, 255, .28);
+      background: rgba(255, 255, 255, .96);
+      color: var(--text);
+    }
+
+    .lead-card .btn {
+      border-color: #fff;
+      background: #fff;
+      color: var(--primary-dark);
+    }
+
+    .lead-status {
+      min-height: 18px;
+      color: rgba(255, 255, 255, .92);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .upgrade-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .upgrade-card {
+      border: 1px solid rgba(255, 255, 255, .24);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .10);
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+      color: #fff;
+    }
+
+    .upgrade-card strong {
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .upgrade-card span {
+      color: rgba(255, 255, 255, .74);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .upgrade-card .btn {
+      margin-top: 4px;
+      width: 100%;
+    }
+
+    .paid-preview {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .paid-preview-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      border-top: 1px solid rgba(255, 255, 255, .18);
+      padding-top: 16px;
+    }
+
+    .paid-preview-head h3 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .paid-preview-head p {
+      margin: 6px 0 0;
+      color: rgba(255, 255, 255, .76);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .preview-badge {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: rgba(132, 204, 22, .18);
+      border: 1px solid rgba(190, 242, 100, .48);
+      color: #ecfccb;
+      padding: 7px 10px;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .paid-preview-table {
+      overflow-x: auto;
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .paid-preview-table table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    .paid-preview-table th,
+    .paid-preview-table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, .16);
+      text-align: left;
+      vertical-align: top;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .paid-preview-table th {
+      color: rgba(255, 255, 255, .86);
+      font-size: 13px;
+      font-weight: 900;
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .paid-preview-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .paid-preview-table strong {
+      display: block;
+      color: #fff;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .paid-preview-table span {
+      display: block;
+      margin-top: 4px;
+      color: rgba(255, 255, 255, .72);
+    }
+
+    .paid-day-locks {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .paid-day-lock {
+      min-height: 58px;
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .08);
+      color: rgba(255, 255, 255, .88);
+      cursor: pointer;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .paid-day-lock span {
+      display: block;
+      margin-top: 3px;
+      color: rgba(255, 255, 255, .58);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .checkin-advice {
+      border: 1px solid #a7d8cf;
+      background: #f0fdfa;
+      color: var(--primary-dark);
+      border-radius: 8px;
+      padding: 12px 13px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .checkin-log {
+      display: grid;
+      gap: 8px;
+    }
+
+    .checkin-layout {
+      display: grid;
+      grid-template-columns: minmax(310px, .95fr) minmax(260px, .75fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .checkin-controls {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(238, 244, 241, .86);
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .checkin-calendar {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .9);
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .calendar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .calendar-head strong {
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    .calendar-nav button {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--primary-dark);
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .calendar-weekdays span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: #40534d;
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.1;
+      padding: 4px 2px;
+      cursor: pointer;
+      position: relative;
+      transition: background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease;
+    }
+
+    .calendar-day-number,
+    .calendar-day-record {
+      display: block;
+      text-align: center;
+    }
+
+    .calendar-day-number {
+      font-size: 15px;
+    }
+
+    .calendar-day-record {
+      margin-top: 2px;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1.15;
+      opacity: .9;
+    }
+
+    .calendar-day:hover {
+      transform: translateY(-1px);
+      border-color: var(--primary);
+    }
+
+    .calendar-day.muted {
+      color: #b4beb8;
+      background: rgba(247, 250, 246, .72);
+    }
+
+    .calendar-day.today {
+      border-color: var(--accent);
+      box-shadow: inset 0 0 0 2px rgba(132, 204, 22, .24);
+    }
+
+    .calendar-day.checked {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(15, 118, 110, .18);
+    }
+
+    .calendar-day.selected {
+      outline: 3px solid rgba(132, 204, 22, .38);
+      outline-offset: 2px;
+    }
+
+    .checkin-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .88);
+      padding: 10px 12px;
+      color: #40534d;
+      font-size: 15px;
+    }
+
+    .checkin-item b {
+      color: var(--text);
+    }
+
+    .checkin-item span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .notice {
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: #1e3a8a;
+      border-radius: var(--radius);
+      padding: 12px 13px;
+      font-size: 13px;
+    }
+
+    .empty {
+      border: 1px dashed var(--line-strong);
+      background: rgba(255, 255, 255, .72);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .print-only {
+      display: none;
+    }
+
+    @media (max-width: 1120px) {
+      .layout,
+      .dashboard,
+      .two-col,
+      .checkin-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .input-panel {
+        position: static;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 860px) {
+      .wizard-step.compact-step.active {
+        grid-template-columns: 1fr;
+      }
+
+      .training-volume-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 700px) {
+      .app {
+        padding: 16px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .welcome-shell {
+        min-height: auto;
+        padding: 12px 0 28px;
+      }
+
+      .welcome-panel {
+        padding: 24px 16px;
+      }
+
+      .welcome-logo {
+        width: 92px;
+        height: 92px;
+        border-radius: 20px;
+      }
+
+      .welcome-points {
+        grid-template-columns: 1fr;
+      }
+
+      .welcome-actions .btn {
+        width: 100%;
+      }
+
+      .top-actions,
+      .form-actions {
+        width: 100%;
+      }
+
+      .page-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .top-actions .btn,
+      .form-actions .btn {
+        flex: 1 1 0;
+      }
+
+      .field-grid,
+      .pantry-select-grid,
+      .mini-selects,
+      .upgrade-grid,
+      .paid-day-locks,
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .paid-preview-head {
+        flex-direction: column;
+      }
+
+      .wizard-progress {
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .progress-step {
+        justify-content: center;
+        padding: 7px 4px;
+      }
+
+      .segmented {
+        grid-template-columns: 1fr;
+      }
+
+      .page-head {
+        align-items: stretch;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .app {
+        width: 100%;
+        padding: 0;
+      }
+
+      .input-panel,
+      .top-actions,
+      .page-head,
+      .lead-card,
+      .tabs,
+      .notice {
+        display: none !important;
+      }
+
+      .topbar {
+        margin-bottom: 14px;
+      }
+
+      .layout,
+      .dashboard,
+      .two-col,
+      .summary-grid {
+        display: block;
+      }
+
+      .result,
+      .card,
+      .metric {
+        break-inside: avoid;
+      }
+
+      .card,
+      .metric {
+        box-shadow: none;
+        margin-bottom: 12px;
+      }
+
+      .print-only {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div>
+          <h1>FitMeal 减脂增肌食谱规划器</h1>
+          <p>根据用户现有食材，生成可执行的热量、宏量营养和每日吃法。</p>
+          <p class="print-only">本方案为一般健康饮食参考，不替代医生或注册营养师建议。</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn" type="button" id="printBtn" title="打印或保存为 PDF">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+          导出
+        </button>
+      </div>
+    </header>
+
+    <section class="page active" id="welcomePage">
+      <div class="welcome-shell">
+        <div class="welcome-panel">
+          <div class="welcome-logo" aria-hidden="true"></div>
+          <div class="welcome-copy">
+            <h2>欢迎来到 FitMeal</h2>
+            <p>第一次告诉我目标、身体信息和常用食材，我会生成一份清楚好执行的食谱。之后每天回来只需要打卡，必要时再调整。</p>
+          </div>
+          <div class="welcome-actions">
+            <button class="btn primary" type="button" id="beginPlanBtn">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+              第一次配餐
+            </button>
+            <button class="btn" type="button" id="continuePlanBtn" hidden>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+              继续上次食谱 / 今日打卡
+            </button>
+          </div>
+          <div class="welcome-points" aria-label="使用步骤">
+            <span>1. 第一次建档</span>
+            <span>2. 每天只打卡</span>
+            <span>3. 需要时调整</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="startPage">
+      <div class="start-shell">
+        <aside class="panel input-panel" aria-label="食谱输入">
+        <div class="panel-head">
+          <h2>开始配餐挑战</h2>
+          <p>第一次建档时填写一次；以后每天只需要回到食谱页打卡。</p>
+        </div>
+
+        <form class="form" id="plannerForm">
+          <div class="wizard-progress" aria-label="填写进度">
+            <div class="progress-step active" data-progress="0"><b>1</b>目标</div>
+            <div class="progress-step" data-progress="1"><b>2</b>资料</div>
+            <div class="progress-step" data-progress="2"><b>3</b>食材与运动</div>
+          </div>
+
+          <section class="wizard-step active" data-step="0">
+            <div class="step-title">
+              <div>
+                <h3>选择你的主线任务</h3>
+                <p>先选一个方向，后面的热量和食材比例会跟着变。</p>
+              </div>
+              <span class="level-badge">第 1 关</span>
+            </div>
+
+            <div class="goal-cards" role="radiogroup" aria-label="目标">
+              <label class="goal-card">
+                <input type="radio" name="goal" id="goalCut" value="cut" checked>
+                <span class="goal-body">
+                  <span>
+                    <strong>减脂</strong>
+                    <span>控热量、保蛋白，适合先把体脂降下来。</span>
+                  </span>
+                  <i class="goal-icon">-</i>
+                </span>
+              </label>
+              <label class="goal-card">
+                <input type="radio" name="goal" id="goalRecomp" value="recomp">
+                <span class="goal-body">
+                  <span>
+                    <strong>减脂增肌</strong>
+                    <span>轻微热量缺口，训练日碳水更友好。</span>
+                  </span>
+                  <i class="goal-icon">=</i>
+                </span>
+              </label>
+              <label class="goal-card">
+                <input type="radio" name="goal" id="goalBulk" value="bulk">
+                <span class="goal-body">
+                  <span>
+                    <strong>增肌</strong>
+                    <span>热量小盈余，主食和恢复不能太省。</span>
+                  </span>
+                  <i class="goal-icon">+</i>
+                </span>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn primary next-step" type="button" data-next="1">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                下一步
+              </button>
+              <button class="btn" type="button" id="resetBtn" title="清空输入">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                清空
+              </button>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="1">
+            <div class="step-title">
+              <div>
+                <h3>填写角色属性</h3>
+                <p>可以自己输入，也可以点输入框右侧选择常见值。</p>
+              </div>
+              <span class="level-badge">第 2 关</span>
+            </div>
+
+            <div class="field-grid">
+              <div class="field">
+                <label for="sex">性别</label>
+                <select id="sex" name="sex">
+                  <option value="male">男</option>
+                  <option value="female">女</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="age">年龄</label>
+                <input id="age" name="age" type="text" inputmode="numeric" list="ageOptions" value="28">
+              </div>
+              <div class="field">
+                <label for="height">身高 cm</label>
+                <input id="height" name="height" type="text" inputmode="decimal" list="heightOptions" value="175">
+              </div>
+              <div class="field">
+                <label for="weight">体重 kg</label>
+                <input id="weight" name="weight" type="text" inputmode="decimal" list="weightOptions" value="77">
+              </div>
+              <div class="field">
+                <label for="activity">日常活动</label>
+                <select id="activity" name="activity">
+                  <option value="1.2">久坐，很少运动</option>
+                  <option value="1.375" selected>轻活动，每周 1-3 练</option>
+                  <option value="1.55">中等活动，每周 3-5 练</option>
+                  <option value="1.725">高活动，每周 6-7 练</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="trainingDays">力量训练</label>
+                <select id="trainingDays" name="trainingDays">
+                  <option value="0">暂不训练</option>
+                  <option value="2">每周 2 天</option>
+                  <option value="3" selected>每周 3 天</option>
+                  <option value="4">每周 4 天</option>
+                  <option value="5">每周 5 天以上</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="trainingTime">训练时间</label>
+                <select id="trainingTime" name="trainingTime">
+                  <option value="morning">上午</option>
+                  <option value="noon">中午</option>
+                  <option value="evening" selected>晚上</option>
+                  <option value="none">不固定</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="meals">每日餐数</label>
+                <select id="meals" name="meals">
+                  <option value="3" selected>3 餐</option>
+                  <option value="4">3 餐 + 加餐</option>
+                </select>
+              </div>
+            </div>
+
+            <datalist id="ageOptions">
+              <option value="18"><option value="22"><option value="25"><option value="28"><option value="30"><option value="35"><option value="40"><option value="45">
+            </datalist>
+            <datalist id="heightOptions">
+              <option value="155"><option value="160"><option value="165"><option value="170"><option value="175"><option value="180"><option value="185">
+            </datalist>
+            <datalist id="weightOptions">
+              <option value="50"><option value="55"><option value="60"><option value="65"><option value="70"><option value="77"><option value="85"><option value="95">
+            </datalist>
+
+            <div class="form-actions">
+              <button class="btn" type="button" data-prev="0">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+                上一步
+              </button>
+              <button class="btn primary next-step" type="button" data-next="2">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                去填食材与运动
+              </button>
+            </div>
+          </section>
+
+          <section class="wizard-step compact-step" data-step="2">
+            <div class="step-title">
+              <div>
+                <h3>食材与运动</h3>
+                <p>这里是生成食谱用的基础档案，不需要每天重复填写。</p>
+              </div>
+              <span class="level-badge">第 3 关</span>
+            </div>
+
+            <div class="setup-block compact-workout">
+              <div class="setup-block-title">
+                <h4>运动量</h4>
+                <span>按分钟分配食物</span>
+              </div>
+              <div class="training-volume-grid" aria-label="填写运动分钟数">
+                <div class="training-volume-card">
+                  <h5>力量 + 有氧日</h5>
+                  <div class="training-volume-pair">
+                    <div class="field">
+                      <label for="comboStrengthMinutes">力量</label>
+                      <input id="comboStrengthMinutes" name="comboStrengthMinutes" type="number" min="0" max="180" step="5" value="45" inputmode="numeric">
+                    </div>
+                    <div class="field">
+                      <label for="comboCardioMinutes">有氧</label>
+                      <input id="comboCardioMinutes" name="comboCardioMinutes" type="number" min="0" max="180" step="5" value="25" inputmode="numeric">
+                    </div>
+                  </div>
+                </div>
+                <div class="training-volume-card">
+                  <h5>纯力量日</h5>
+                  <div class="field">
+                    <label for="strengthMinutes">力量训练</label>
+                    <input id="strengthMinutes" name="strengthMinutes" type="number" min="0" max="180" step="5" value="60" inputmode="numeric">
+                  </div>
+                </div>
+                <div class="training-volume-card">
+                  <h5>纯有氧日</h5>
+                  <div class="field">
+                    <label for="cardioMinutes">有氧</label>
+                    <input id="cardioMinutes" name="cardioMinutes" type="number" min="0" max="180" step="5" value="40" inputmode="numeric">
+                  </div>
+                </div>
+                <div class="training-volume-card">
+                  <h5>练腿日</h5>
+                  <div class="field">
+                    <label for="legMinutes">练腿</label>
+                    <input id="legMinutes" name="legMinutes" type="number" min="0" max="180" step="5" value="60" inputmode="numeric">
+                  </div>
+                </div>
+                <div class="rest-day-note">
+                  <strong>休息日</strong>
+                  <span>不用填时间，自动按少主食、多蔬菜、蛋白不减生成。</span>
+                </div>
+              </div>
+              <div class="hint">不同训练日可以填不同时间，生成后会分别分配力量+有氧、练腿、纯力量、有氧、休息日的早中晚。</div>
+            </div>
+
+            <div class="setup-block pantry-groups compact-pantry" aria-label="食材选择">
+              <div class="setup-block-title">
+                <h4>添加食材</h4>
+                <select class="quick-preset" id="ingredientPreset" aria-label="快捷模板">
+                  <option value="">快捷模板</option>
+                  <option value="home">家常减脂</option>
+                  <option value="student">学生宿舍</option>
+                  <option value="takeout">外卖辅助</option>
+                </select>
+              </div>
+
+              <div class="pantry-select-grid">
+                <div class="pantry-select-card">
+                  <h4>肉 / 蛋 / 高蛋白</h4>
+                  <div class="select-action">
+                    <select id="proteinSelect" aria-label="选择肉蛋高蛋白">
+                      <option value="">选择一种</option>
+                      <option value="鸡胸肉">鸡胸肉</option>
+                      <option value="鸡腿">鸡腿</option>
+                      <option value="鸡蛋">鸡蛋</option>
+                      <option value="瘦牛肉">瘦牛肉</option>
+                      <option value="牛腱子">牛腱子</option>
+                      <option value="猪里脊">猪里脊</option>
+                      <option value="虾仁">虾仁</option>
+                      <option value="鱼">鱼</option>
+                      <option value="金枪鱼">金枪鱼</option>
+                      <option value="豆腐">豆腐</option>
+                      <option value="豆干">豆干</option>
+                      <option value="脱脂奶">脱脂奶</option>
+                      <option value="希腊酸奶">希腊酸奶</option>
+                      <option value="蛋白粉">蛋白粉</option>
+                    </select>
+                    <button class="btn" type="button" data-add-food="proteinSelect">添加</button>
+                  </div>
+                </div>
+
+                <div class="pantry-select-card">
+                  <h4>蔬菜 / 水果</h4>
+                  <div class="select-action">
+                    <select id="vegSelect" aria-label="选择蔬菜水果">
+                      <option value="">选择一种</option>
+                      <option value="西兰花">西兰花</option>
+                      <option value="菠菜">菠菜</option>
+                      <option value="油麦菜">油麦菜</option>
+                      <option value="生菜">生菜</option>
+                      <option value="白菜">白菜</option>
+                      <option value="包菜">包菜</option>
+                      <option value="黄瓜">黄瓜</option>
+                      <option value="番茄">番茄</option>
+                      <option value="胡萝卜">胡萝卜</option>
+                      <option value="蘑菇">蘑菇</option>
+                      <option value="金针菇">金针菇</option>
+                      <option value="洋葱">洋葱</option>
+                      <option value="苹果">苹果</option>
+                      <option value="香蕉">香蕉</option>
+                      <option value="蓝莓">蓝莓</option>
+                    </select>
+                    <button class="btn" type="button" data-add-food="vegSelect">添加</button>
+                  </div>
+                </div>
+
+                <div class="pantry-select-card">
+                  <h4>主食 / 脂肪</h4>
+                  <div class="select-action">
+                    <select id="carbSelect" aria-label="选择主食脂肪">
+                      <option value="">选择一种</option>
+                      <option value="米饭">米饭</option>
+                      <option value="糙米">糙米</option>
+                      <option value="燕麦">燕麦</option>
+                      <option value="红薯">红薯</option>
+                      <option value="紫薯">紫薯</option>
+                      <option value="土豆">土豆</option>
+                      <option value="玉米">玉米</option>
+                      <option value="全麦面包">全麦面包</option>
+                      <option value="荞麦面">荞麦面</option>
+                      <option value="意面">意面</option>
+                      <option value="魔芋">魔芋</option>
+                      <option value="橄榄油">橄榄油</option>
+                      <option value="坚果">坚果</option>
+                      <option value="牛油果">牛油果</option>
+                    </select>
+                    <button class="btn" type="button" data-add-food="carbSelect">添加</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="selected-pantry">
+                <h4>已选食材</h4>
+                <div class="tag-cloud" id="selectedFoodTags">
+                  <span class="tag warn">还没添加食材</span>
+                </div>
+                <div id="selectedFoodsStore" hidden></div>
+              </div>
+
+              <div class="field full">
+                <label for="ingredients">手写补充</label>
+                <textarea id="ingredients" name="ingredients" placeholder="例如：鸡胸肉 500g、鸡蛋 6 个、燕麦、糙米、西兰花、番茄、魔芋、橄榄油"></textarea>
+                <div class="hint">下拉选择和手写内容会合并；写上大概重量会更准。</div>
+              </div>
+            </div>
+
+            <div class="setup-block compact-rules">
+              <div class="setup-block-title">
+                <h4>吃法和限制</h4>
+                <span>让食谱更贴近日常</span>
+              </div>
+              <div class="mini-selects">
+                <div class="field">
+                  <label for="cooking">吃饭方式</label>
+                  <select id="cooking" name="cooking">
+                    <option value="home_all" selected>一日三餐都在家做</option>
+                    <option value="work_lunch_takeout">早餐/晚餐在家，中午点外卖</option>
+                    <option value="work_lunch_prep">早餐/晚餐在家，中午带餐</option>
+                    <option value="takeout_main">大部分时间点外卖</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>限制条件</label>
+                  <div class="checks">
+                    <label class="chip-check">
+                      <input type="checkbox" name="limits" value="noPork">
+                      <span>不吃猪肉</span>
+                    </label>
+                    <label class="chip-check">
+                      <input type="checkbox" name="limits" value="noMilk">
+                      <span>乳糖不适</span>
+                    </label>
+                    <label class="chip-check">
+                      <input type="checkbox" name="limits" value="lowSalt">
+                      <span>少盐</span>
+                    </label>
+                    <label class="chip-check">
+                      <input type="checkbox" name="limits" value="quick">
+                      <span>只做快手菜</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <details class="field full optional-details">
+                <summary>补剂（可选）</summary>
+                <div class="select-action">
+                  <select id="supplementSelect" aria-label="选择补剂">
+                    <option value="">选择正在用的补剂</option>
+                    <option value="proteinPowder">蛋白粉</option>
+                    <option value="creatine">肌酸</option>
+                    <option value="fishOil">鱼油</option>
+                    <option value="multivitamin">多维</option>
+                    <option value="vitaminD">维生素 D3</option>
+                    <option value="electrolyte">电解质</option>
+                    <option value="caffeine">咖啡因</option>
+                    <option value="preWorkout">氮泵 / 训练前</option>
+                    <option value="beetroot">甜菜根粉</option>
+                    <option value="greens">果蔬粉</option>
+                    <option value="probiotics">益生菌</option>
+                    <option value="calciumMagnesiumZinc">钙镁锌</option>
+                    <option value="magnesium">镁</option>
+                    <option value="eaa">EAA / BCAA</option>
+                    <option value="carbPowder">碳水粉</option>
+                    <option value="glutamine">谷氨酰胺</option>
+                    <option value="hmb">HMB</option>
+                    <option value="lCarnitine">左旋肉碱</option>
+                    <option value="collagen">胶原蛋白</option>
+                  </select>
+                  <button class="btn" type="button" id="addSupplementBtn">添加</button>
+                </div>
+                <div class="selected-pantry">
+                  <h4>已选补剂</h4>
+                  <div class="tag-cloud" id="selectedSupplementTags">
+                    <span class="tag warn">未选择补剂</span>
+                  </div>
+                  <div id="selectedSupplementsStore" hidden></div>
+                </div>
+                <div class="hint">补剂只做辅助，食谱还是优先按真实食物和总热量执行。</div>
+              </details>
+            </div>
+
+            <div class="field full confirm-box">
+              <label>最后确认</label>
+              <div class="checks">
+                <label class="chip-check">
+                  <input type="checkbox" id="foodConfirmed" name="foodConfirmed" value="yes">
+                  <span>我确认肉、蔬菜、主食都填完了</span>
+                </label>
+              </div>
+              <div class="hint">没有确认前不会生成食谱，避免漏填食材导致方案不准。</div>
+            </div>
+
+            <input type="hidden" id="contactPrice" name="contactPrice" value="39">
+
+            <div class="form-actions">
+              <button class="btn" type="button" data-prev="1">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+                上一步
+              </button>
+              <button class="btn primary" type="submit">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5"/><path d="M4 12h16"/><path d="M9 5v14"/><path d="M15 5v14"/><path d="M20 5v14"/></svg>
+                生成食谱
+              </button>
+            </div>
+          </section>
+
+          <div class="form-error" id="formError" role="alert"></div>
+          <div class="notice">提示：涉及疾病、孕期、未成年人、严重肥胖或饮食障碍时，需要专业医生或注册营养师介入。</div>
+        </form>
+        </aside>
+      </div>
+    </section>
+
+    <section class="page" id="resultPage">
+      <div class="page-head">
+        <div class="page-title">
+          <h2>为您量身定做的食谱</h2>
+          <p>根据目标、身体信息、食材和运动模式生成，先执行这一套，再看打卡结果调整。</p>
+        </div>
+        <button class="btn" type="button" id="editPlanBtn">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+          修改配餐
+        </button>
+      </div>
+
+      <section class="result" aria-live="polite">
+        <div class="dashboard">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <h2>一日三餐食谱</h2>
+                <p id="mealSubtitle">今天是什么训练？点下面标签，直接看对应三餐。</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="empty" id="emptyState">输入食材后，点击“生成食谱”。</div>
+              <div class="meal-list" id="mealList" hidden></div>
+            </div>
+          </article>
+        </div>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2>每日打卡</h2>
+              <p>早上起床后称重，记录是否已经上卫生间，用连续数据判断要不要变更食谱。</p>
+            </div>
+          </div>
+          <form class="card-body" id="checkinForm">
+            <div class="checkin-layout">
+              <div class="checkin-calendar">
+                <div class="calendar-head">
+                  <strong id="calendarMonth">--</strong>
+                  <div class="calendar-nav" aria-label="打卡日历切换">
+                    <button type="button" id="prevMonthBtn" aria-label="上个月">‹</button>
+                    <button type="button" id="nextMonthBtn" aria-label="下个月">›</button>
+                  </div>
+                </div>
+                <div class="calendar-weekdays" aria-hidden="true">
+                  <span>一</span>
+                  <span>二</span>
+                  <span>三</span>
+                  <span>四</span>
+                  <span>五</span>
+                  <span>六</span>
+                  <span>日</span>
+                </div>
+                <div class="calendar-grid" id="checkinCalendar"></div>
+              </div>
+
+              <div class="checkin-controls">
+                <div class="field">
+                  <label for="checkinDate">日期</label>
+                  <input id="checkinDate" name="checkinDate" type="date">
+                </div>
+                <div class="field">
+                  <label for="checkinWeight">早上体重 kg</label>
+                  <input id="checkinWeight" name="checkinWeight" type="number" min="35" max="220" step="0.1" placeholder="例如：76.8">
+                </div>
+                <div class="field">
+                  <label for="bathroomStatus">卫生间状态</label>
+                  <select id="bathroomStatus" name="bathroomStatus">
+                    <option value="pee">小便后</option>
+                    <option value="poop">大便后</option>
+                    <option value="none">未去卫生间</option>
+                  </select>
+                </div>
+                <button class="btn primary" type="submit">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                  保存打卡
+                </button>
+                <div class="checkin-advice" id="checkinAdvice">连续记录 7-14 天后，会提示是否需要调整食谱。</div>
+                <button class="btn" type="button" id="adjustPlanBtn">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18"/><path d="M7 7h10"/><path d="M7 17h10"/><path d="M12 3v18"/></svg>
+                  根据打卡调整食谱
+                </button>
+                <div class="checkin-log" id="checkinLog"></div>
+              </div>
+            </div>
+          </form>
+        </article>
+
+        <div class="summary-grid" id="summaryGrid">
+          <article class="metric">
+            <span>目标热量</span>
+            <strong id="targetKcal">--</strong>
+            <small id="targetNote">填写资料后生成</small>
+          </article>
+          <article class="metric">
+            <span>蛋白质</span>
+            <strong id="proteinTarget">--</strong>
+            <small>优先保证</small>
+          </article>
+          <article class="metric">
+            <span>碳水</span>
+            <strong id="carbTarget">--</strong>
+            <small>围绕训练安排</small>
+          </article>
+          <article class="metric">
+            <span>脂肪</span>
+            <strong id="fatTarget">--</strong>
+            <small>不要过低</small>
+          </article>
+        </div>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2>执行提醒</h2>
+              <p>只看这 3 条就够了</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <ul class="info-list" id="howToEat"></ul>
+          </div>
+        </article>
+
+        <article class="card lead-card">
+          <div class="card-head">
+            <div>
+              <h2>领取详细版食谱</h2>
+              <p id="leadCopy">免费版包含基础食谱、运动日切换、换餐和打卡。下面是详细版方向预览，未开放的内容不会直接显示。</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="upgrade-grid">
+              <div class="upgrade-card">
+                <strong>7-14 天执行计划</strong>
+                <span>同一套食谱稳定执行，告诉你训练日、休息日和外卖日怎么调整。</span>
+                <button class="btn" type="button" data-locked-feature="7-14 天执行计划">解锁</button>
+              </div>
+              <div class="upgrade-card">
+                <strong>PDF 导出</strong>
+                <span>保存或打印完整食谱，方便照着吃。</span>
+                <button class="btn" type="button" data-locked-feature="PDF 导出">解锁</button>
+              </div>
+              <div class="upgrade-card">
+                <strong>趋势调整</strong>
+                <span>根据连续打卡趋势提示该加量还是减量。</span>
+                <button class="btn" type="button" data-locked-feature="打卡趋势调整">解锁</button>
+              </div>
+            </div>
+            <div class="paid-preview" id="paidPreview" aria-label="付费版详细计划预览"></div>
+          </div>
+          <form class="card-body field-grid" id="leadForm">
+            <div class="field">
+              <label for="leadName">称呼</label>
+              <input id="leadName" name="leadName" autocomplete="name" placeholder="例如：小李">
+            </div>
+            <div class="field">
+              <label for="leadContact">联系方式</label>
+              <input id="leadContact" name="leadContact" autocomplete="tel" placeholder="微信/手机号/邮箱">
+            </div>
+            <div class="field">
+              <label for="leadNeed">想领取的内容</label>
+              <select id="leadNeed" name="leadNeed">
+                <option>7-14 天执行计划</option>
+                <option>减脂增肌月计划</option>
+                <option>外卖选择指导</option>
+              </select>
+            </div>
+            <div class="field" style="align-self:end;">
+              <button class="btn" type="submit">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
+                领取详细版食谱
+              </button>
+            </div>
+            <div class="field full">
+              <div class="lead-status" id="leadStatus">留下联系方式后，后续可以优先收到详细版计划。</div>
+            </div>
+          </form>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="confirmFoodModal" role="dialog" aria-modal="true" aria-labelledby="confirmFoodTitle">
+    <div class="modal">
+      <div>
+        <h2 id="confirmFoodTitle">确认食材已经填完？</h2>
+        <p>食谱会根据你填写的食材生成。如果还有肉、蔬菜、主食没填，建议先返回补充。</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" type="button" id="backToFoodsBtn">返回补充</button>
+        <button class="btn primary" type="button" id="confirmFoodsBtn">确认并生成</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="lockedFeatureModal" role="dialog" aria-modal="true" aria-labelledby="lockedFeatureTitle">
+    <div class="modal">
+      <div>
+        <h2 id="lockedFeatureTitle">付费版功能</h2>
+        <p id="lockedFeatureText">该功能属于付费版，当前先用于测试用户是否感兴趣。</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" type="button" id="closeLockedFeatureBtn">先不用</button>
+        <button class="btn primary" type="button" id="focusLeadBtn">我感兴趣</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="replaceMealModal" role="dialog" aria-modal="true" aria-labelledby="replaceMealTitle">
+    <div class="modal">
+      <div>
+        <h2 id="replaceMealTitle">换这一餐</h2>
+        <p id="replaceMealText">选择你想替换的部分，系统会继续使用你已经填写的食材。</p>
+      </div>
+      <div class="replace-options">
+        <button class="btn" type="button" data-replace-kind="protein">换蛋白</button>
+        <button class="btn" type="button" data-replace-kind="carb">换主食</button>
+        <button class="btn primary" type="button" data-replace-kind="meal">整餐换个吃法</button>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" type="button" id="closeReplaceMealBtn">先不换</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const foodCatalog = [
+      { keys: ["鸡胸", "鸡肉", "鸡腿", "鸡"], type: "protein", name: "鸡胸肉", unit: "1-2 掌心", kcal: 220, protein: 42, carbs: 0, fat: 5, recipes: ["香煎鸡胸", "水煮撕鸡胸", "鸡胸蔬菜拌饭"] },
+      { keys: ["牛肉", "瘦牛", "牛腱"], type: "protein", name: "瘦牛肉", unit: "1 掌心", kcal: 250, protein: 36, carbs: 0, fat: 12, recipes: ["黑椒牛肉", "牛肉蔬菜碗"] },
+      { keys: ["猪里脊", "里脊肉"], type: "protein", name: "猪里脊", unit: "1 掌心", kcal: 210, protein: 32, carbs: 0, fat: 8, recipes: ["水煮里脊", "里脊蔬菜碗"] },
+      { keys: ["鱼", "虾", "虾仁", "鳕鱼", "三文鱼", "金枪鱼"], type: "protein", name: "鱼虾类", unit: "1-1.5 掌心", kcal: 210, protein: 35, carbs: 0, fat: 8, recipes: ["清蒸鱼", "虾仁蔬菜炒饭"] },
+      { keys: ["鸡蛋", "蛋"], type: "protein", name: "鸡蛋", unit: "2 个", kcal: 155, protein: 13, carbs: 1, fat: 11, recipes: ["水煮蛋", "番茄炒蛋", "鸡蛋燕麦饼"] },
+      { keys: ["豆腐", "豆干", "豆皮", "豆"], type: "protein", name: "豆制品", unit: "1.5 掌心", kcal: 170, protein: 18, carbs: 6, fat: 8, recipes: ["豆腐蔬菜汤", "香煎豆腐"] },
+      { keys: ["蛋白粉", "乳清"], type: "protein", name: "蛋白粉", unit: "1 勺", kcal: 120, protein: 24, carbs: 3, fat: 2, recipes: ["蛋白奶昔"] },
+      { keys: ["牛奶", "脱脂奶", "酸奶", "希腊酸奶"], type: "protein", name: "奶制品", unit: "250ml", kcal: 120, protein: 10, carbs: 12, fat: 3, recipes: ["燕麦牛奶杯", "酸奶水果碗"] },
+      { keys: ["米饭", "糙米", "大米", "饭"], type: "carb", name: "米饭/糙米", unit: "1 拳", kcal: 210, protein: 4, carbs: 45, fat: 1, recipes: ["鸡胸糙米饭", "蔬菜拌饭"] },
+      { keys: ["燕麦", "麦片"], type: "carb", name: "燕麦", unit: "40-60g", kcal: 190, protein: 7, carbs: 31, fat: 4, recipes: ["燕麦牛奶杯", "咸燕麦鸡蛋粥"] },
+      { keys: ["面", "荞麦", "意面", "全麦面"], type: "carb", name: "面类", unit: "干重 60-80g", kcal: 230, protein: 8, carbs: 48, fat: 2, recipes: ["鸡胸拌荞麦面", "番茄鸡蛋面"] },
+      { keys: ["红薯", "紫薯", "土豆", "玉米"], type: "carb", name: "薯类/玉米", unit: "1-1.5 拳", kcal: 170, protein: 3, carbs: 39, fat: 1, recipes: ["蒸红薯配鸡蛋", "土豆牛肉碗"] },
+      { keys: ["全麦", "面包", "吐司"], type: "carb", name: "全麦面包", unit: "2 片", kcal: 160, protein: 7, carbs: 30, fat: 2, recipes: ["鸡蛋全麦吐司", "牛肉三明治"] },
+      { keys: ["魔芋"], type: "carb", name: "魔芋", unit: "1 袋", kcal: 35, protein: 1, carbs: 8, fat: 0, recipes: ["魔芋拌鸡胸", "魔芋蔬菜汤"] },
+      { keys: ["西兰花", "青菜", "油麦菜", "菠菜", "生菜", "白菜", "包菜", "黄瓜", "番茄", "小番茄", "胡萝卜", "蘑菇", "金针菇", "菌菇", "洋葱", "蔬菜"], type: "veg", name: "蔬菜", unit: "2 拳以上", kcal: 80, protein: 4, carbs: 15, fat: 1, recipes: ["水煮蔬菜", "蔬菜沙拉", "蔬菜汤"] },
+      { keys: ["苹果", "香蕉", "蓝莓", "草莓", "水果"], type: "fruit", name: "水果", unit: "1 份", kcal: 95, protein: 1, carbs: 24, fat: 0, recipes: ["训练前水果", "酸奶水果碗"] },
+      { keys: ["橄榄油", "油", "牛油果", "坚果", "花生酱", "芝麻酱"], type: "fat", name: "健康脂肪", unit: "拇指大小", kcal: 90, protein: 2, carbs: 2, fat: 9, recipes: ["橄榄油拌菜", "坚果加餐"] }
+    ];
+
+    const dateFormatter = new Intl.DateTimeFormat("zh-CN", {
+      month: "2-digit",
+      day: "2-digit"
+    });
+
+    const supplementLabels = {
+      proteinPowder: "蛋白粉",
+      creatine: "肌酸",
+      beetroot: "甜菜根粉",
+      greens: "果蔬粉",
+      multivitamin: "多维",
+      fishOil: "鱼油",
+      vitaminD: "维生素 D3",
+      electrolyte: "电解质",
+      caffeine: "咖啡因",
+      eaa: "EAA / BCAA",
+      probiotics: "益生菌",
+      calciumMagnesiumZinc: "钙镁锌",
+      preWorkout: "氮泵 / 训练前",
+      carbPowder: "碳水粉",
+      glutamine: "谷氨酰胺",
+      hmb: "HMB",
+      lCarnitine: "左旋肉碱",
+      collagen: "胶原蛋白",
+      magnesium: "镁"
+    };
+
+    const form = document.querySelector("#plannerForm");
+    const leadForm = document.querySelector("#leadForm");
+    const checkinForm = document.querySelector("#checkinForm");
+    const mealList = document.querySelector("#mealList");
+    const emptyState = document.querySelector("#emptyState");
+    const howToEat = document.querySelector("#howToEat");
+    const leadStatus = document.querySelector("#leadStatus");
+    const leadCopy = document.querySelector("#leadCopy");
+    const paidPreview = document.querySelector("#paidPreview");
+    const wizardSteps = document.querySelectorAll(".wizard-step");
+    const progressSteps = document.querySelectorAll(".progress-step");
+    const ingredientPreset = document.querySelector("#ingredientPreset");
+    const welcomePage = document.querySelector("#welcomePage");
+    const startPage = document.querySelector("#startPage");
+    const resultPage = document.querySelector("#resultPage");
+    const beginPlanBtn = document.querySelector("#beginPlanBtn");
+    const continuePlanBtn = document.querySelector("#continuePlanBtn");
+    const editPlanBtn = document.querySelector("#editPlanBtn");
+    const selectedFoodTags = document.querySelector("#selectedFoodTags");
+    const selectedFoodsStore = document.querySelector("#selectedFoodsStore");
+    const supplementSelect = document.querySelector("#supplementSelect");
+    const addSupplementBtn = document.querySelector("#addSupplementBtn");
+    const selectedSupplementTags = document.querySelector("#selectedSupplementTags");
+    const selectedSupplementsStore = document.querySelector("#selectedSupplementsStore");
+    const formError = document.querySelector("#formError");
+    const checkinDate = document.querySelector("#checkinDate");
+    const checkinWeight = document.querySelector("#checkinWeight");
+    const bathroomStatus = document.querySelector("#bathroomStatus");
+    const checkinAdvice = document.querySelector("#checkinAdvice");
+    const checkinLog = document.querySelector("#checkinLog");
+    const calendarMonth = document.querySelector("#calendarMonth");
+    const checkinCalendar = document.querySelector("#checkinCalendar");
+    const prevMonthBtn = document.querySelector("#prevMonthBtn");
+    const nextMonthBtn = document.querySelector("#nextMonthBtn");
+    const adjustPlanBtn = document.querySelector("#adjustPlanBtn");
+    const confirmFoodModal = document.querySelector("#confirmFoodModal");
+    const backToFoodsBtn = document.querySelector("#backToFoodsBtn");
+    const confirmFoodsBtn = document.querySelector("#confirmFoodsBtn");
+    const lockedFeatureModal = document.querySelector("#lockedFeatureModal");
+    const lockedFeatureText = document.querySelector("#lockedFeatureText");
+    const closeLockedFeatureBtn = document.querySelector("#closeLockedFeatureBtn");
+    const focusLeadBtn = document.querySelector("#focusLeadBtn");
+    const replaceMealModal = document.querySelector("#replaceMealModal");
+    const replaceMealText = document.querySelector("#replaceMealText");
+    const closeReplaceMealBtn = document.querySelector("#closeReplaceMealBtn");
+
+    let currentPlan = null;
+    let currentDay = 0;
+    let currentStep = 0;
+    let currentCalendarDate = new Date();
+    let selectedFoods = [];
+    let selectedSupplements = [];
+    let pendingReplaceMealIndex = null;
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function roundTo(value, step) {
+      return Math.round(value / step) * step;
+    }
+
+    function readNumber(formData, key, fallback) {
+      const value = Number(formData.get(key));
+      return Number.isFinite(value) && value > 0 ? value : fallback;
+    }
+
+    function readNumberWithZero(formData, key, fallback) {
+      const value = Number(formData.get(key));
+      return Number.isFinite(value) && value >= 0 ? value : fallback;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function showPage(page) {
+      const wantsWelcome = page === "welcome";
+      const wantsResult = page === "result";
+      if (wantsResult && !currentPlan) return;
+      welcomePage.classList.toggle("active", wantsWelcome);
+      startPage.classList.toggle("active", !wantsWelcome && !wantsResult);
+      resultPage.classList.toggle("active", wantsResult);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function setStep(step) {
+      currentStep = clamp(step, 0, wizardSteps.length - 1);
+      setFormError("");
+      form.classList.toggle("compact-active", currentStep === 2);
+      wizardSteps.forEach(panel => {
+        panel.classList.toggle("active", Number(panel.dataset.step) === currentStep);
+      });
+      progressSteps.forEach(item => {
+        const index = Number(item.dataset.progress);
+        item.classList.toggle("active", index === currentStep);
+        item.classList.toggle("done", index < currentStep);
+      });
+    }
+
+    function setSelectedFoods(names) {
+      selectedFoods = Array.from(new Set(names.map(item => String(item).trim()).filter(Boolean)));
+      renderSelectedFoods();
+    }
+
+    function getSelectedFoods() {
+      return [...selectedFoods];
+    }
+
+    function renderSelectedFoods() {
+      selectedFoodsStore.innerHTML = selectedFoods.map(food => `<input type="hidden" name="selectedFoods" value="${escapeHtml(food)}">`).join("");
+      selectedFoodTags.innerHTML = selectedFoods.length
+        ? selectedFoods.map(food => `
+          <span class="food-token">
+            ${escapeHtml(food)}
+            <button type="button" aria-label="移除${escapeHtml(food)}" data-remove-food="${escapeHtml(food)}">×</button>
+          </span>
+        `).join("")
+        : `<span class="tag warn">还没添加食材</span>`;
+    }
+
+    function addSelectedFood(food) {
+      if (!food) return;
+      setSelectedFoods([...selectedFoods, food]);
+    }
+
+    function setSelectedSupplements(values) {
+      selectedSupplements = Array.from(new Set(values.map(item => String(item).trim()).filter(Boolean)));
+      renderSelectedSupplements();
+    }
+
+    function getSelectedSupplements() {
+      return [...selectedSupplements];
+    }
+
+    function renderSelectedSupplements() {
+      selectedSupplementsStore.innerHTML = selectedSupplements
+        .map(value => `<input type="hidden" name="supplements" value="${escapeHtml(value)}">`)
+        .join("");
+      selectedSupplementTags.innerHTML = selectedSupplements.length
+        ? selectedSupplements.map(value => `
+          <span class="food-token">
+            ${escapeHtml(supplementLabels[value] || value)}
+            <button type="button" aria-label="移除${escapeHtml(supplementLabels[value] || value)}" data-remove-supplement="${escapeHtml(value)}">×</button>
+          </span>
+        `).join("")
+        : `<span class="tag warn">未选择补剂</span>`;
+    }
+
+    function addSelectedSupplement(value) {
+      if (!value) return;
+      setSelectedSupplements([...selectedSupplements, value]);
+    }
+
+    function setFormError(message) {
+      formError.textContent = message;
+      formError.classList.toggle("show", Boolean(message));
+    }
+
+    function showConfirmFoodModal() {
+      confirmFoodModal.classList.add("show");
+    }
+
+    function hideConfirmFoodModal() {
+      confirmFoodModal.classList.remove("show");
+    }
+
+    function showLockedFeature(feature) {
+      lockedFeatureText.textContent = `${feature} 属于付费版功能。现在可以先留下联系方式，后续开放时优先通知。`;
+      lockedFeatureModal.classList.add("show");
+    }
+
+    function hideLockedFeature() {
+      lockedFeatureModal.classList.remove("show");
+    }
+
+    function showReplaceMealModal(index) {
+      if (!currentPlan) return;
+      const activeMode = currentPlan.activeWorkoutMode || currentPlan.data.workoutMode || "strength_cardio";
+      const meals = currentPlan.workoutMeals?.[activeMode] || currentPlan.days[0] || [];
+      const meal = meals[index];
+      if (!meal) return;
+      pendingReplaceMealIndex = index;
+      replaceMealText.textContent = `当前要换：${meal.time} - ${meal.title}。可以只换一种食材，也可以整餐换个吃法。`;
+      replaceMealModal.classList.add("show");
+    }
+
+    function hideReplaceMealModal() {
+      replaceMealModal.classList.remove("show");
+      pendingReplaceMealIndex = null;
+    }
+
+    function validateStep(step) {
+      const data = new FormData(form);
+      if (step === 1) {
+        const age = Number(data.get("age"));
+        const height = Number(data.get("height"));
+        const weight = Number(data.get("weight"));
+        if (!Number.isFinite(age) || age < 14 || age > 80) return "请填写有效年龄，建议范围 14-80。";
+        if (!Number.isFinite(height) || height < 120 || height > 230) return "请填写有效身高，单位是 cm。";
+        if (!Number.isFinite(weight) || weight < 35 || weight > 220) return "请填写有效体重，单位是 kg。";
+      }
+      if (step === 2) {
+        const strengthMinutes = Number(data.get("strengthMinutes"));
+        const cardioMinutes = Number(data.get("cardioMinutes"));
+        const legMinutes = Number(data.get("legMinutes"));
+        const comboStrengthMinutes = Number(data.get("comboStrengthMinutes"));
+        const comboCardioMinutes = Number(data.get("comboCardioMinutes"));
+        const minutes = [comboStrengthMinutes, comboCardioMinutes, strengthMinutes, cardioMinutes, legMinutes];
+        if (minutes.some(value => !Number.isFinite(value) || value < 0 || value > 180)) return "运动分钟数请填写 0-180 之间的数字。";
+        const typedIngredients = String(data.get("ingredients") || "").trim();
+        if (!selectedFoods.length && !typedIngredients) return "请至少在食材与训练档案里添加一种食材，或手写补充食材。";
+        if (data.get("foodConfirmed") !== "yes") return "请先勾选“我确认家里的食材已经填完”，再生成食谱。";
+        const allIngredients = [...selectedFoods, typedIngredients].join("、");
+        const parsed = parseIngredients(allIngredients);
+        const types = new Set(parsed.matched.map(food => food.type));
+        if (!types.has("protein")) return "还缺少蛋白类食材。请添加鸡胸肉、鸡蛋、鱼虾、牛肉、豆腐等。";
+        if (!types.has("carb")) return "还缺少主食类食材。请添加米饭、糙米、燕麦、红薯、荞麦面等。";
+        if (!types.has("veg")) return "还缺少蔬菜类食材。请添加西兰花、菠菜、生菜、番茄、黄瓜等。";
+        if (data.getAll("limits").includes("noPork") && /猪|里脊肉/.test(allIngredients)) return "你选择了不吃猪肉，请先移除猪里脊或取消这个限制。";
+      }
+      return "";
+    }
+
+    function trySetStep(step) {
+      if (step > currentStep) {
+        const message = validateStep(currentStep);
+        if (message) {
+          setFormError(message);
+          return;
+        }
+      }
+      setStep(step);
+    }
+
+    function addFoodFromSelect(selectId) {
+      const select = document.querySelector(`#${selectId}`);
+      if (!select || !select.value) return;
+      addSelectedFood(select.value);
+      select.value = "";
+    }
+
+    function applySavedData(data) {
+      document.querySelector(`input[name="goal"][value="${data.goal || "recomp"}"]`).checked = true;
+      document.querySelector("#sex").value = data.sex || "male";
+      document.querySelector("#age").value = data.age || 28;
+      document.querySelector("#height").value = data.height || 175;
+      document.querySelector("#weight").value = data.weight || 77;
+      document.querySelector("#activity").value = String(data.activity || 1.375);
+      document.querySelector("#trainingDays").value = String(data.trainingDays ?? 3);
+      document.querySelector("#trainingTime").value = data.trainingTime || "evening";
+      document.querySelector("#comboStrengthMinutes").value = data.comboStrengthMinutes ?? data.strengthMinutes ?? 45;
+      document.querySelector("#comboCardioMinutes").value = data.comboCardioMinutes ?? data.cardioMinutes ?? 25;
+      document.querySelector("#strengthMinutes").value = data.strengthMinutes ?? 45;
+      document.querySelector("#cardioMinutes").value = data.cardioMinutes ?? 25;
+      document.querySelector("#legMinutes").value = data.legMinutes ?? 60;
+      document.querySelector("#meals").value = data.meals || "3";
+      document.querySelector("#ingredients").value = data.typedIngredients || data.ingredients || "";
+      setSelectedFoods(data.selectedFoods || []);
+      document.querySelector("#foodConfirmed").checked = false;
+      document.querySelector("#cooking").value = data.cooking || "home_all";
+      document.querySelector("#contactPrice").value = data.contactPrice || "39";
+      document.querySelectorAll("input[name='limits']").forEach(item => {
+        item.checked = (data.limits || []).includes(item.value);
+      });
+      setSelectedSupplements(data.supplements || []);
+    }
+
+    function bindPantryControls() {
+      document.querySelectorAll("[data-add-food]").forEach(button => {
+        button.addEventListener("click", () => addFoodFromSelect(button.dataset.addFood));
+      });
+
+      addSupplementBtn.addEventListener("click", () => {
+        addSelectedSupplement(supplementSelect.value);
+        supplementSelect.value = "";
+      });
+
+      selectedFoodTags.addEventListener("click", event => {
+        const remove = event.target.closest ? event.target.closest("[data-remove-food]") : null;
+        if (!remove) return;
+        setSelectedFoods(selectedFoods.filter(food => food !== remove.dataset.removeFood));
+      });
+
+      selectedSupplementTags.addEventListener("click", event => {
+        const remove = event.target.closest ? event.target.closest("[data-remove-supplement]") : null;
+        if (!remove) return;
+        setSelectedSupplements(selectedSupplements.filter(value => value !== remove.dataset.removeSupplement));
+      });
+    }
+
+    function bindChoiceLabels() {
+      document.querySelectorAll(".goal-card").forEach(label => {
+        label.addEventListener("click", event => {
+          event.preventDefault();
+          const input = label.querySelector("input[type='radio']");
+          if (input) input.checked = true;
+        });
+      });
+
+      document.querySelectorAll(".chip-check").forEach(label => {
+        label.addEventListener("click", event => {
+          event.preventDefault();
+          const input = label.querySelector("input[type='checkbox']");
+          if (input) input.checked = !input.checked;
+        });
+      });
+    }
+
+    function saveLocal(key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch (error) {
+        return false;
+      }
+      return true;
+    }
+
+    function readLocal(key, fallback = null) {
+      try {
+        return localStorage.getItem(key) || fallback;
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function removeLocal(key) {
+      try {
+        localStorage.removeItem(key);
+      } catch (error) {
+        return false;
+      }
+      return true;
+    }
+
+    async function submitLeadToBackend(lead) {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(lead)
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || "提交失败");
+      }
+      return result;
+    }
+
+    function parseIngredients(text) {
+      const rawParts = text
+        .split(/[\n,，、;；|]/)
+        .map(item => item.trim())
+        .filter(Boolean);
+
+      const normalizedText = text.toLowerCase();
+      const matched = [];
+
+      foodCatalog.forEach(food => {
+        if (food.keys.some(key => normalizedText.includes(key.toLowerCase()))) {
+          matched.push({ ...food, source: "matched" });
+        }
+      });
+
+      const custom = rawParts
+        .filter(item => !matched.some(food => food.keys.some(key => item.toLowerCase().includes(key.toLowerCase()))))
+        .slice(0, 8)
+        .map(item => ({ name: item.replace(/\s+/g, " "), type: "unknown", source: "custom" }));
+
+      return { matched, custom, rawParts };
+    }
+
+    function pickFood(foods, type, offset = 0) {
+      const list = foods.filter(food => food.type === type);
+      if (!list.length) return null;
+      return list[offset % list.length];
+    }
+
+    function pickRecipe(food, offset = 0) {
+      if (!food?.recipes?.length) return food?.name || "家常做法";
+      return food.recipes[offset % food.recipes.length];
+    }
+
+    function requireFood(food, typeLabel) {
+      if (food) return food;
+      return {
+        name: `未填写${typeLabel}`,
+        unit: "0g",
+        kcal: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        recipes: [`补齐${typeLabel}`],
+        source: "missing"
+      };
+    }
+
+    function estimateTargets(data) {
+      const sexOffset = data.sex === "male" ? 5 : -161;
+      const bmr = 10 * data.weight + 6.25 * data.height - 5 * data.age + sexOffset;
+      const tdee = bmr * data.activity;
+      const goalMap = {
+        cut: { label: "减脂", kcalAdjust: -.18, protein: 2.0, fat: .72 },
+        recomp: { label: "减脂增肌", kcalAdjust: -.07, protein: 2.05, fat: .76 },
+        bulk: { label: "增肌", kcalAdjust: .10, protein: 1.8, fat: .82 }
+      };
+      const goal = goalMap[data.goal] || goalMap.cut;
+      const targetKcal = roundTo(tdee * (1 + goal.kcalAdjust), 10);
+      const protein = roundTo(data.weight * goal.protein, 5);
+      const fat = roundTo(data.weight * goal.fat, 5);
+      const carb = roundTo(Math.max(80, (targetKcal - protein * 4 - fat * 9) / 4), 5);
+      return {
+        bmr: Math.round(bmr),
+        tdee: Math.round(tdee),
+        goalLabel: goal.label,
+        targetKcal,
+        protein,
+        carb,
+        fat
+      };
+    }
+
+    function portionPlan(goal) {
+      const plans = {
+        cut: { protein: 160, carb: 55, veg: 300, breakfastCarb: 45, breakfastProtein: 120, dinnerCarb: 40 },
+        recomp: { protein: 180, carb: 70, veg: 300, breakfastCarb: 50, breakfastProtein: 140, dinnerCarb: 55 },
+        bulk: { protein: 200, carb: 90, veg: 280, breakfastCarb: 60, breakfastProtein: 150, dinnerCarb: 75 }
+      };
+      return plans[goal] || plans.cut;
+    }
+
+    function fistCountText(value) {
+      if (value <= 0) return "不额外加";
+      if (value <= 60) return "半拳";
+      if (value <= 120) return "1 拳";
+      if (value <= 180) return "1.5 拳";
+      if (value <= 260) return "2 拳";
+      if (value <= 360) return "2.5 拳";
+      return "3 拳";
+    }
+
+    function noScaleText({ protein = 0, carb = 0, veg = 0, extra = "" }) {
+      const parts = [];
+      if (protein) parts.push(`肉蛋/蛋白 ${fistCountText(protein)}`);
+      if (carb) parts.push(`主食 ${fistCountText(carb)}`);
+      if (veg) parts.push(`蔬菜 ${fistCountText(veg)}`);
+      if (extra) parts.push(extra);
+      return parts.length ? `无秤估量：${parts.join("，")}。` : "";
+    }
+
+    function trainingLoad(data, mode) {
+      const strength = Number(data.strengthMinutes) || 0;
+      const cardio = Number(data.cardioMinutes) || 0;
+      const leg = Number(data.legMinutes) || 0;
+      const comboStrength = Number(data.comboStrengthMinutes) || 0;
+      const comboCardio = Number(data.comboCardioMinutes) || 0;
+      if (mode === "strength_cardio") return clamp(comboStrength + comboCardio, 0, 180);
+      if (mode === "leg") return clamp(leg, 0, 180);
+      if (mode === "strength") return clamp(strength, 0, 180);
+      if (mode === "cardio") return clamp(cardio, 0, 180);
+      return 0;
+    }
+
+    function workoutNutritionProfile(mode, data = {}) {
+      const load = trainingLoad(data, mode);
+      const carbBoost = roundTo(clamp(load / 30, 0, 5) * 5, 5);
+      const proteinBoost = roundTo(clamp(load / 60, 0, 3) * 5, 5);
+      const profiles = {
+        strength_cardio: {
+          label: "力量 + 有氧日",
+          shortLabel: "力量+有氧",
+          hasTraining: true,
+          breakfastRatio: .25,
+          lunchRatio: .34,
+          dinnerRatio: .31,
+          snackRatio: .10,
+          breakfastCarbDelta: Math.round(carbBoost * .5),
+          lunchCarbDelta: 10 + carbBoost,
+          dinnerCarbDelta: 5 + Math.round(carbBoost * .5),
+          breakfastProteinDelta: 0,
+          lunchProteinDelta: proteinBoost,
+          dinnerProteinDelta: proteinBoost,
+          vegDelta: 0,
+          breakfastRule: `力量 + 有氧日：按力量 ${Number(data.comboStrengthMinutes) || 0} 分钟 + 有氧 ${Number(data.comboCardioMinutes) || 0} 分钟分配，早餐保留主食。`,
+          lunchRule: "力量 + 有氧日：午餐主食比基础日略多，训练表现会更稳。",
+          dinnerRule: "力量 + 有氧日：晚餐保留少量主食，训练后不要完全断碳。",
+          snackRule: "力量 + 有氧：训练前后用水果、蛋白粉或正餐补足，不随手吃零食。"
+        },
+        leg: {
+          label: "练腿日",
+          shortLabel: "练腿",
+          hasTraining: true,
+          breakfastRatio: .26,
+          lunchRatio: .36,
+          dinnerRatio: .28,
+          snackRatio: .10,
+          breakfastCarbDelta: 10 + Math.round(carbBoost * .5),
+          lunchCarbDelta: 25 + carbBoost,
+          dinnerCarbDelta: 15 + Math.round(carbBoost * .5),
+          breakfastProteinDelta: 0,
+          lunchProteinDelta: 10 + proteinBoost,
+          dinnerProteinDelta: 10 + proteinBoost,
+          vegDelta: 0,
+          breakfastRule: `练腿日：按练腿 ${Number(data.legMinutes) || 0} 分钟分配，早餐主食略加，给当天训练留体力。`,
+          lunchRule: "练腿日：午餐是当天主食最多的一餐，训练前后不要把碳水压太低。",
+          dinnerRule: "练腿日：晚餐继续保留主食和蛋白，帮助恢复。",
+          snackRule: "练腿日：训练前后优先补主食和蛋白，别用高油零食顶替。"
+        },
+        strength: {
+          label: "纯力量日",
+          shortLabel: "纯力量",
+          hasTraining: true,
+          breakfastRatio: .25,
+          lunchRatio: .35,
+          dinnerRatio: .30,
+          snackRatio: .10,
+          breakfastCarbDelta: Math.round(carbBoost * .3),
+          lunchCarbDelta: 15 + carbBoost,
+          dinnerCarbDelta: 5 + Math.round(carbBoost * .3),
+          breakfastProteinDelta: 10 + Math.round(proteinBoost * .5),
+          lunchProteinDelta: 10 + proteinBoost,
+          dinnerProteinDelta: 10 + proteinBoost,
+          vegDelta: 0,
+          breakfastRule: `纯力量日：按力量训练 ${Number(data.strengthMinutes) || 0} 分钟分配，早餐先保证蛋白，主食正常吃。`,
+          lunchRule: "纯力量日：训练前后 3 小时内保留主食，蛋白比基础日略多。",
+          dinnerRule: "纯力量日：晚餐蛋白略多，主食不要完全省掉。",
+          snackRule: "纯力量日：训练后优先补蛋白和正餐，蛋白粉只补缺口。"
+        },
+        cardio: {
+          label: "有氧 / 恢复日",
+          shortLabel: "有氧",
+          hasTraining: true,
+          breakfastRatio: .25,
+          lunchRatio: .33,
+          dinnerRatio: .32,
+          snackRatio: .10,
+          breakfastCarbDelta: 5 + Math.round(carbBoost * .4),
+          lunchCarbDelta: Math.round(carbBoost * .5),
+          dinnerCarbDelta: -15,
+          breakfastProteinDelta: 0,
+          lunchProteinDelta: 0,
+          dinnerProteinDelta: 0,
+          vegDelta: 50,
+          breakfastRule: `有氧日：按有氧 ${Number(data.cardioMinutes) || 0} 分钟分配，早餐吃少量易消化主食，别空腹硬扛。`,
+          lunchRule: "有氧日：午餐正常吃，避免用甜饮和高油食物补热量。",
+          dinnerRule: "有氧日：晚餐主食少一点，蔬菜多一点，整体更清淡。",
+          snackRule: "有氧日：如果饿，用水果或高蛋白加餐，不额外加高油食物。"
+        },
+        rest: {
+          label: "休息日",
+          shortLabel: "休息",
+          hasTraining: false,
+          breakfastRatio: .28,
+          lunchRatio: .38,
+          dinnerRatio: .34,
+          snackRatio: 0,
+          breakfastCarbDelta: -5,
+          lunchCarbDelta: -15,
+          dinnerCarbDelta: -20,
+          breakfastProteinDelta: 0,
+          lunchProteinDelta: 0,
+          dinnerProteinDelta: 0,
+          vegDelta: 80,
+          breakfastRule: "休息日：早餐正常吃，蛋白不减，主食略少。",
+          lunchRule: "休息日：午餐主食比训练日少一点，蔬菜加量。",
+          dinnerRule: "休息日：晚餐以蛋白和蔬菜为主，主食少量保留。",
+          snackRule: "休息日：没有明显饥饿就不加餐，先把正餐吃稳。"
+        }
+      };
+      return profiles[mode] || profiles.strength_cardio;
+    }
+
+    function seasoningText(lowSalt = false) {
+      return lowSalt
+        ? "生抽 5g + 醋 8g + 蒜末 5g + 黑胡椒 1g + 橄榄油 3g；不额外加盐。"
+        : "生抽 8g + 醋 8g + 盐 1g + 黑胡椒 1g + 橄榄油 5g。";
+    }
+
+    function workoutMealModes() {
+      return [
+        { key: "strength_cardio", label: "力量 + 有氧" },
+        { key: "leg", label: "练腿日" },
+        { key: "strength", label: "纯力量" },
+        { key: "cardio", label: "有氧 / 恢复" },
+        { key: "rest", label: "休息日" }
+      ];
+    }
+
+    function foodOffsetForKind(kind, offset, baseOffset = 0) {
+      if (kind === "protein") return { protein: baseOffset + offset, carb: baseOffset, veg: baseOffset };
+      if (kind === "carb") return { protein: baseOffset, carb: baseOffset + offset, veg: baseOffset };
+      if (kind === "veg") return { protein: baseOffset, carb: baseOffset, veg: baseOffset + offset };
+      return { protein: baseOffset + offset, carb: baseOffset + offset, veg: baseOffset + offset };
+    }
+
+    function buildMeals(data, foods, targets, dayIndex, replaceKind = "meal") {
+      const baseFoodOffset = Number.isFinite(data.foodOffset) ? data.foodOffset : dayIndex;
+      const replaceOffset = Number.isFinite(data.replaceOffset) ? data.replaceOffset : dayIndex;
+      const recipeOffset = Number.isFinite(data.recipeOffset) ? data.recipeOffset : dayIndex;
+      const offsets = foodOffsetForKind(replaceKind, replaceOffset, baseFoodOffset);
+      const proteinA = requireFood(pickFood(foods, "protein", offsets.protein), "蛋白食材");
+      const proteinB = pickFood(foods, "protein", replaceKind === "protein" || replaceKind === "meal" ? offsets.protein + 1 : offsets.protein) || proteinA;
+      const carbA = requireFood(pickFood(foods, "carb", offsets.carb), "主食");
+      const carbB = pickFood(foods, "carb", replaceKind === "carb" || replaceKind === "meal" ? offsets.carb + 1 : offsets.carb) || carbA;
+      const veg = requireFood(pickFood(foods, "veg", offsets.veg), "蔬菜");
+      const fruit = pickFood(foods, "fruit", dayIndex);
+      const proteinARecipe = pickRecipe(proteinA, recipeOffset);
+      const proteinBRecipe = pickRecipe(proteinB, recipeOffset + 1);
+      const carbARecipe = pickRecipe(carbA, recipeOffset);
+      const carbBRecipe = pickRecipe(carbB, recipeOffset + 1);
+      const hasMilkLimit = data.limits.includes("noMilk");
+      const lowSalt = data.limits.includes("lowSalt");
+      const portion = portionPlan(data.goal);
+      const cookingMode = data.cooking || "home_all";
+      const workoutMode = data.workoutMode || "strength_cardio";
+      const workoutProfile = workoutNutritionProfile(workoutMode, data);
+      const quick = data.limits.includes("quick") || cookingMode === "takeout_main";
+      const lunchTakeout = cookingMode === "work_lunch_takeout" || cookingMode === "takeout_main";
+      const lunchPrep = cookingMode === "work_lunch_prep";
+      const hasTrainingToday = workoutProfile.hasTraining;
+      const includeSnack = data.meals === 4 || hasTrainingToday;
+      const kcalBreakfast = Math.round(targets.targetKcal * workoutProfile.breakfastRatio);
+      const kcalLunch = Math.round(targets.targetKcal * workoutProfile.lunchRatio);
+      const kcalDinner = Math.round(targets.targetKcal * workoutProfile.dinnerRatio);
+      const kcalSnack = includeSnack ? Math.max(120, Math.round(targets.targetKcal * workoutProfile.snackRatio)) : 0;
+      const breakfastCarb = Math.max(25, portion.breakfastCarb + workoutProfile.breakfastCarbDelta);
+      const breakfastProtein = Math.max(100, portion.breakfastProtein + workoutProfile.breakfastProteinDelta);
+      const lunchProtein = Math.max(120, portion.protein + workoutProfile.lunchProteinDelta);
+      const lunchCarb = Math.max(30, portion.carb + workoutProfile.lunchCarbDelta);
+      const lunchVeg = Math.max(250, portion.veg + workoutProfile.vegDelta);
+      const dinnerProtein = Math.max(120, portion.protein + workoutProfile.dinnerProteinDelta);
+      const dinnerCarb = Math.max(20, portion.dinnerCarb + workoutProfile.dinnerCarbDelta);
+      const dinnerVeg = Math.max(250, portion.veg + workoutProfile.vegDelta);
+      const breakfastName = carbA.name.includes("燕麦") && !hasMilkLimit
+        ? `${carbARecipe} + ${proteinA.name}`
+        : `${proteinARecipe} + ${carbA.name}`;
+      const lunchName = lunchTakeout
+        ? `外卖模板：${proteinA.name} + ${carbA.name} + 双份蔬菜`
+        : lunchPrep
+          ? `带餐盒：${proteinA.name} + ${carbA.name} + ${veg.name}`
+          : `${proteinARecipe} + ${carbA.name} + ${veg.name}`;
+      const dinnerName = quick
+        ? `${proteinB.name}${veg.name}快手碗`
+        : `${proteinBRecipe} + ${carbBRecipe}`;
+      const snackName = includeSnack
+        ? `${fruit ? fruit.name : proteinA.name} + ${proteinA.name === "蛋白粉" ? "蛋白粉" : "高蛋白加餐"}`
+        : "按饥饿程度选择加餐";
+
+      const meals = [
+        {
+          time: "早餐",
+          title: `${workoutProfile.shortLabel}早餐：${breakfastName}`,
+          kcal: kcalBreakfast,
+          desc: cookingMode === "takeout_main"
+            ? `外卖或便利店选择：${proteinA.name} 120-150g / 鸡蛋 2 个 / 无糖酸奶 250g，配 ${carbA.name} ${breakfastCarb}g。`
+            : `${carbA.name} ${breakfastCarb}g + ${proteinA.name} ${breakfastProtein}g；如果上午很饿，加黄瓜/番茄 150g。`,
+          visual: noScaleText({ protein: breakfastProtein, carb: breakfastCarb, extra: "黄瓜/番茄约 1 拳" }),
+          seasoning: "早餐调味：盐 0.5g 或无糖代糖少量；燕麦可加脱脂奶 250ml。",
+          method: "做法：主食提前煮好或冲泡；蛋白煎/煮/微波加热，控制油 0-3g。",
+          note: workoutProfile.breakfastRule
+        },
+        {
+          time: "午餐",
+          title: `${workoutProfile.shortLabel}午餐：${lunchName}`,
+          kcal: kcalLunch,
+          desc: lunchTakeout
+            ? `外卖点餐：肉类约 ${lunchProtein}g，米饭 ${data.goal === "bulk" || workoutMode === "leg" ? "200-250g" : "120-180g"}，蔬菜至少 ${lunchVeg}g；酱汁单独放。`
+            : lunchPrep
+              ? `带餐盒：${proteinA.name} ${lunchProtein}g + ${carbA.name} ${lunchCarb}g + ${veg.name} ${lunchVeg}g；酱汁单独放。`
+              : `在家做：${proteinA.name} ${lunchProtein}g + ${carbA.name} ${lunchCarb}g + ${veg.name} ${lunchVeg}g。`,
+          visual: noScaleText({ protein: lunchProtein, carb: lunchCarb, veg: lunchVeg }),
+          seasoning: lunchTakeout ? "外卖调味：让商家少油少盐，酱汁另放；自己最多用一半酱汁。" : `午餐调味：${seasoningText(lowSalt)}`,
+          method: lunchTakeout ? "做法：优先选烤/炖/蒸/轻炒套餐；炸物、肥肉、奶茶、甜饮不计入这套方案。" : "做法：主食蒸/煮；蛋白少油煎或水煮；蔬菜焯 1-2 分钟后拌调味料。",
+          note: lunchTakeout ? `${workoutProfile.label}：中午外卖也按这个运动模式控制主食和蛋白。` : workoutProfile.lunchRule
+        },
+        {
+          time: "晚餐",
+          title: `${workoutProfile.shortLabel}晚餐：${dinnerName}`,
+          kcal: kcalDinner,
+          desc: cookingMode === "takeout_main"
+            ? `晚餐外卖：蛋白 ${dinnerProtein}g 左右，蔬菜 ${dinnerVeg}g，主食 ${workoutMode === "rest" ? "50-100g" : data.goal === "cut" ? "80-120g" : "120-180g"}。`
+            : `在家做：${proteinB.name} ${dinnerProtein}g + ${veg.name} ${dinnerVeg}g + ${carbB.name} ${dinnerCarb}g。`,
+          visual: noScaleText({ protein: dinnerProtein, carb: dinnerCarb, veg: dinnerVeg }),
+          seasoning: cookingMode === "takeout_main" ? "外卖调味：少酱汁、少油，汤汁不喝完。" : `晚餐调味：${seasoningText(lowSalt)}`,
+          method: cookingMode === "takeout_main" ? "做法：优先选轻食双蛋白、烤鱼、牛肉饭少饭、鸡腿饭去皮；不选炸鸡和肥肉。" : "做法：蛋白煎/煮/蒸；蔬菜焯水后拌；主食提前分装，晚餐按克数取用。",
+          note: workoutProfile.dinnerRule
+        }
+      ];
+
+      if (includeSnack) {
+        meals.splice(2, 0, {
+          time: hasTrainingToday && data.trainingTime === "evening" ? "练前/练后" : "加餐",
+          title: `${workoutProfile.shortLabel}加餐：${snackName}`,
+          kcal: kcalSnack,
+          desc: hasTrainingToday
+            ? workoutProfile.snackRule
+            : fruit
+              ? `下午饥饿时吃 ${fruit.unit} ${fruit.name}，或用 ${proteinA.name} 补足蛋白。`
+              : `下午饥饿时优先用 ${proteinA.name} 补足蛋白；如果想吃水果，先回到食材与训练档案补充水果。`,
+          visual: noScaleText({ protein: proteinA.name === "蛋白粉" ? 0 : 80, extra: fruit ? "水果约 1 拳" : "蛋白粉 1 勺或高蛋白食物半拳" }),
+          seasoning: "加餐通常不需要调味；如果喝蛋白粉，用水或脱脂奶 250ml 冲。",
+          method: "做法：水果直接吃；蛋白粉摇匀即可；训练前避免高油食物。",
+          note: "加餐服务于训练和饱腹，不随手吃零食。"
+        });
+      }
+
+      const estimated = meals.reduce((sum, meal) => sum + meal.kcal, 0);
+      const adjust = targets.targetKcal - estimated;
+      if (Math.abs(adjust) > 80) {
+        meals[meals.length - 1].kcal += adjust;
+      }
+
+      return meals;
+    }
+
+    function buildHowToEat(data, targets) {
+      return [
+        `这套餐先吃 10-14 天，不要天天改。目标约 ${targets.targetKcal} kcal/天。`,
+        "每天早上打卡体重，尽量同一时间、同一卫生间状态。",
+        "连续 7-14 天再看趋势：不变再调整，掉太快再加量。"
+      ];
+    }
+
+    function buildSupplementAdvice(supplements) {
+      const selected = supplements.map(item => supplementLabels[item]).filter(Boolean);
+      if (!selected.length) return "补剂：未选择补剂，先把正餐、蛋白和睡眠做好。";
+
+      const tips = [];
+      if (supplements.includes("proteinPowder")) tips.push("蛋白粉只用于补足蛋白缺口，不替代正餐");
+      if (supplements.includes("creatine")) tips.push("肌酸每天固定 3-5g，训练日和休息日都可用");
+      if (supplements.includes("beetroot")) tips.push("甜菜根粉适合有氧或腿部训练前使用");
+      if (supplements.includes("caffeine")) tips.push("咖啡因放在训练前，下午晚些时候少用以免影响睡眠");
+      if (supplements.includes("fishOil")) tips.push("鱼油随正餐吃更容易坚持");
+      if (supplements.includes("electrolyte")) tips.push("电解质适合大量出汗或有氧日");
+      if (supplements.includes("eaa")) tips.push("EAA / BCAA 在蛋白吃够时优先级不高");
+      if (supplements.includes("greens")) tips.push("果蔬粉不能替代蔬菜，只能当补充");
+      if (supplements.includes("preWorkout")) tips.push("氮泵和训练前产品不要和咖啡因叠太多");
+      if (supplements.includes("carbPowder")) tips.push("碳水粉只在训练量大或增肌期需要补热量时使用");
+      if (supplements.includes("glutamine") || supplements.includes("hmb") || supplements.includes("lCarnitine")) {
+        tips.push("谷氨酰胺、HMB、左旋肉碱优先级低于总热量、蛋白和训练质量");
+      }
+      if (supplements.includes("collagen")) tips.push("胶原蛋白不等于完整蛋白，不能直接抵扣每日蛋白目标");
+      if (supplements.includes("magnesium")) tips.push("镁可以放在晚间，但别和钙镁锌重复堆量");
+      if (supplements.includes("multivitamin") || supplements.includes("vitaminD") || supplements.includes("calciumMagnesiumZinc") || supplements.includes("probiotics")) {
+        tips.push("维生素矿物质和益生菌按产品标签执行，有用药或慢性病先问医生");
+      }
+      return `补剂：已选 ${selected.join("、")}。${tips.join("；")}。`;
+    }
+
+    function renderSummary(targets) {
+      document.querySelector("#targetKcal").textContent = `${targets.targetKcal}`;
+      document.querySelector("#targetNote").textContent = `BMR ${targets.bmr} / TDEE ${targets.tdee}`;
+      document.querySelector("#proteinTarget").textContent = `${targets.protein}g`;
+      document.querySelector("#carbTarget").textContent = `${targets.carb}g`;
+      document.querySelector("#fatTarget").textContent = `${targets.fat}g`;
+    }
+
+    function renderMeals() {
+      if (!currentPlan) return;
+      const activeMode = currentPlan.activeWorkoutMode || currentPlan.data.workoutMode || "strength_cardio";
+      const meals = currentPlan.workoutMeals?.[activeMode] || currentPlan.days[0] || [];
+      const workoutProfile = workoutNutritionProfile(activeMode, currentPlan.data);
+      mealList.innerHTML = `
+        <div class="meal-mode-switch" aria-label="按运动日查看食谱">
+          <div class="tabs">
+            ${workoutMealModes().map(mode => `
+              <button class="tab ${mode.key === activeMode ? "active" : ""}" type="button" data-meal-mode="${mode.key}">
+                ${escapeHtml(mode.label)}
+              </button>
+            `).join("")}
+          </div>
+          <div class="mode-note">${escapeHtml(workoutProfile.label)}：已按这个运动日调整早中晚的主食、蛋白和蔬菜克数。</div>
+        </div>
+        <div class="meal-table-wrap">
+          <table class="meal-table">
+            <thead>
+              <tr>
+                <th>餐次</th>
+                <th>配餐</th>
+                <th>克数和做法</th>
+                <th>热量</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${meals.map((meal, index) => `
+                <tr>
+                  <td class="meal-time">${escapeHtml(meal.time)}</td>
+                  <td>
+                    <strong class="meal-title">${escapeHtml(meal.title)}</strong>
+                    <span class="meal-note">${escapeHtml(meal.note || "")}</span>
+                  </td>
+                  <td>${escapeHtml(meal.desc)}<span class="meal-visual">${escapeHtml(meal.visual || "")}</span><span class="meal-note">${escapeHtml(meal.method || "")}</span></td>
+                  <td class="meal-kcal">${escapeHtml(meal.kcal)} kcal</td>
+                  <td><button class="btn replace-meal-btn" type="button" data-replace-meal="${index}">换这一餐</button></td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+      emptyState.hidden = true;
+      mealList.hidden = false;
+      document.querySelector("#mealSubtitle").textContent = "今天是什么训练？点下面标签，直接看对应三餐。";
+    }
+
+    function renderPaidPreview() {
+      if (!paidPreview) return;
+      if (!currentPlan) {
+        paidPreview.innerHTML = "";
+        return;
+      }
+
+      const lockedModules = [
+        ["调味克数", "付费解锁"],
+        ["训练日调整", "主食怎么加"],
+        ["休息日调整", "晚餐怎么减"],
+        ["外卖日替换", "照着点餐"],
+        ["体重停滞", "怎么下调"],
+        ["下降太快", "怎么加量"],
+        ["备餐清单", "买菜分装"]
+      ];
+      paidPreview.innerHTML = `
+        <div class="paid-preview-head">
+          <div>
+            <h3>7-14 天执行计划预览</h3>
+            <p>免费版提供食物克数和基础做法。付费版重点解锁调味克数、训练日调整、外卖替换、体重变化调整和备餐清单。</p>
+          </div>
+          <span class="preview-badge">可选升级功能</span>
+        </div>
+        <div class="paid-day-locks" aria-label="锁定的执行计划模块">
+          ${lockedModules.map(([title, subtitle]) => `
+            <button class="paid-day-lock" type="button" data-locked-feature="${title}">
+              ${title}
+              <span>${subtitle}</span>
+            </button>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function replacementStyle(offset) {
+      const styles = [
+        {
+          label: "少油快手版",
+          method: "替换做法：用不粘锅少油煎/炒，主食提前分装，整体控制在 15 分钟内。"
+        },
+        {
+          label: "水煮清爽版",
+          method: "替换做法：蛋白水煮或清蒸，蔬菜焯水后拌，适合想吃清淡的一天。"
+        },
+        {
+          label: "带餐盒版",
+          method: "替换做法：肉、主食、蔬菜分格装盒，酱汁单独带，适合上班带餐。"
+        },
+        {
+          label: "外卖参考版",
+          method: "替换做法：按同样克数去点餐，优先选烤、炖、蒸、轻炒，酱汁另放。"
+        }
+      ];
+      return styles[(offset - 1) % styles.length];
+    }
+
+    function replaceMeal(index, kind = "meal") {
+      const activeMode = currentPlan?.activeWorkoutMode || currentPlan?.data?.workoutMode || "strength_cardio";
+      const activeMeals = currentPlan?.workoutMeals?.[activeMode] || currentPlan?.days?.[0];
+      if (!currentPlan || !activeMeals || !activeMeals[index]) return;
+      currentPlan.mealReplaceCounts = currentPlan.mealReplaceCounts || {};
+      const key = `${activeMode}-${index}-${kind}`;
+      currentPlan.mealReplaceCounts[key] = (currentPlan.mealReplaceCounts[key] || 0) + 1;
+      const offset = currentPlan.mealReplaceCounts[key];
+      const modeIndex = workoutMealModes().findIndex(mode => mode.key === activeMode);
+      const modeData = {
+        ...currentPlan.data,
+        workoutMode: activeMode,
+        foodOffset: modeIndex >= 0 ? modeIndex : 0,
+        replaceOffset: offset,
+        recipeOffset: offset
+      };
+      const alternatives = buildMeals(modeData, currentPlan.foods, currentPlan.targets, modeIndex >= 0 ? modeIndex : 0, kind);
+      if (!alternatives[index]) return;
+      const style = replacementStyle(offset);
+      const kindLabel = kind === "protein" ? "蛋白替换" : kind === "carb" ? "主食替换" : "整餐替换";
+      const nextMeal = {
+        ...alternatives[index],
+        title: `${alternatives[index].title}（${style.label}）`,
+        method: `${style.method}${alternatives[index].method ? ` ${alternatives[index].method}` : ""}`,
+        note: `${kindLabel} ${offset}：${alternatives[index].note || "已按当前食材重新生成。"}`
+      };
+      if (currentPlan.workoutMeals?.[activeMode]) {
+        currentPlan.workoutMeals[activeMode][index] = nextMeal;
+      } else {
+        currentPlan.days[0][index] = nextMeal;
+      }
+      renderMeals();
+      renderPaidPreview();
+      hideReplaceMealModal();
+    }
+
+    function renderList(target, items) {
+      target.innerHTML = items.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+    }
+
+    function formatDateValue(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseDateValue(value) {
+      const [year, month, day] = String(value || "").split("-").map(Number);
+      if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) return new Date();
+      return new Date(year, month - 1, day);
+    }
+
+    function todayValue() {
+      return formatDateValue(new Date());
+    }
+
+    function renderCheckinCalendar(records) {
+      const recordMap = new Map(records.map(record => [record.date, record]));
+      const year = currentCalendarDate.getFullYear();
+      const month = currentCalendarDate.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const startOffset = (firstDay.getDay() + 6) % 7;
+      const gridStart = new Date(year, month, 1 - startOffset);
+      const selectedDate = checkinDate.value || todayValue();
+      const today = todayValue();
+
+      calendarMonth.textContent = `${year} 年 ${month + 1} 月`;
+      checkinCalendar.innerHTML = Array.from({ length: 42 }, (_, index) => {
+        const date = new Date(gridStart);
+        date.setDate(gridStart.getDate() + index);
+        const value = formatDateValue(date);
+        const record = recordMap.get(value);
+        const classes = [
+          "calendar-day",
+          date.getMonth() !== month ? "muted" : "",
+          value === today ? "today" : "",
+          value === selectedDate ? "selected" : "",
+          record ? "checked" : ""
+        ].filter(Boolean).join(" ");
+        const label = record
+          ? `${value}，已打卡，体重 ${record.weight} kg，${bathroomLabel(record.bathroom)}`
+          : `${value}，未打卡`;
+        const recordHtml = record
+          ? `<span class="calendar-day-record">${escapeHtml(record.weight)}kg<br>${escapeHtml(bathroomShortLabel(record.bathroom))}</span>`
+          : "";
+        return `<button class="${classes}" type="button" data-checkin-date="${value}" aria-label="${escapeHtml(label)}"><span class="calendar-day-number">${date.getDate()}</span>${recordHtml}</button>`;
+      }).join("");
+    }
+
+    function getCheckins() {
+      try {
+        const records = JSON.parse(readLocal("fitMealPlannerCheckins", "[]"));
+        return Array.isArray(records) ? records : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveCheckins(records) {
+      saveLocal("fitMealPlannerCheckins", JSON.stringify(records));
+    }
+
+    function average(records) {
+      if (!records.length) return 0;
+      return records.reduce((sum, record) => sum + record.weight, 0) / records.length;
+    }
+
+    function buildCheckinAdvice(records) {
+      if (!currentPlan) return "生成食谱后再开始打卡。";
+      if (records.length < 3) return "先连续记录 3 天，体重会有水分波动，暂时不要急着改食谱。";
+      if (records.length < 7) return `已记录 ${records.length} 天。继续打卡到 7 天后，再看趋势是否需要调整。`;
+
+      const sorted = [...records].sort((a, b) => a.date.localeCompare(b.date));
+      const startAvg = average(sorted.slice(0, Math.min(3, sorted.length)));
+      const endAvg = average(sorted.slice(-3));
+      const diff = Number((endAvg - startAvg).toFixed(1));
+      const goal = currentPlan.data.goal;
+      const days = sorted.length;
+
+      if (goal === "cut" || goal === "recomp") {
+        if (days >= 14 && diff > -0.3) return `已记录 ${days} 天，平均体重几乎没下降。可以把每日热量下调 100-150 kcal，或先减少一小份主食。`;
+        if (diff <= -2) return `平均体重下降约 ${Math.abs(diff)} kg，速度偏快。可以维持一周；如果训练状态变差，主食加半拳。`;
+        return `平均体重变化约 ${diff} kg，趋势正常。继续执行这套餐，暂时不用改。`;
+      }
+
+      if (goal === "bulk") {
+        if (days >= 14 && diff < .5) return `已记录 ${days} 天，增重不明显。可以每日增加 100-150 kcal，优先加主食。`;
+        if (diff > 2) return `平均体重上升约 ${diff} kg，速度偏快。可以少一点油脂或主食，避免脂肪涨太快。`;
+        return `平均体重变化约 ${diff} kg，增肌期趋势可以接受，继续执行。`;
+      }
+
+      return "继续打卡，系统会根据趋势提示是否调整食谱。";
+    }
+
+    function bathroomLabel(value) {
+      const labels = {
+        pee: "小便后",
+        poop: "大便后",
+        none: "未去卫生间",
+        after: "大便后",
+        before: "未去卫生间"
+      };
+      return labels[value] || "未记录卫生间状态";
+    }
+
+    function bathroomShortLabel(value) {
+      const labels = {
+        pee: "小便",
+        poop: "大便",
+        none: "未去",
+        after: "大便",
+        before: "未去"
+      };
+      return labels[value] || "未记";
+    }
+
+    function renderCheckins() {
+      const records = getCheckins().sort((a, b) => b.date.localeCompare(a.date));
+      checkinAdvice.textContent = buildCheckinAdvice(records);
+      renderCheckinCalendar(records);
+      checkinLog.innerHTML = records.length
+        ? records.slice(0, 7).map(record => `
+          <div class="checkin-item">
+            <div><b>${escapeHtml(record.weight)} kg</b><span> ${escapeHtml(bathroomLabel(record.bathroom))}</span></div>
+            <span>${escapeHtml(dateFormatter.format(new Date(record.date)))}</span>
+          </div>
+        `).join("")
+        : `<div class="empty">还没有打卡记录。</div>`;
+    }
+
+    function collectData() {
+      const data = new FormData(form);
+      const chosenFoods = getSelectedFoods();
+      const typedIngredients = data.get("ingredients") || "";
+      const cooking = data.get("cooking") || "home_all";
+      const ingredients = [...chosenFoods, typedIngredients]
+        .map(item => String(item).trim())
+        .filter(Boolean)
+        .join("、");
+      return {
+        goal: data.get("goal"),
+        sex: data.get("sex"),
+        age: readNumber(data, "age", 28),
+        height: readNumber(data, "height", 175),
+        weight: readNumber(data, "weight", 77),
+        activity: readNumber(data, "activity", 1.375),
+        trainingDays: readNumberWithZero(data, "trainingDays", 3),
+        trainingTime: data.get("trainingTime"),
+        comboStrengthMinutes: readNumberWithZero(data, "comboStrengthMinutes", 45),
+        comboCardioMinutes: readNumberWithZero(data, "comboCardioMinutes", 25),
+        strengthMinutes: readNumberWithZero(data, "strengthMinutes", 45),
+        cardioMinutes: readNumberWithZero(data, "cardioMinutes", 25),
+        legMinutes: readNumberWithZero(data, "legMinutes", 60),
+        workoutMode: "strength_cardio",
+        meals: data.get("meals"),
+        ingredients,
+        typedIngredients,
+        selectedFoods: chosenFoods,
+        limits: data.getAll("limits"),
+        supplements: getSelectedSupplements(),
+        cooking,
+        contactPrice: data.get("contactPrice") || "39"
+      };
+    }
+
+    function generatePlan() {
+      const dataForValidation = new FormData(form);
+      const typedIngredients = String(dataForValidation.get("ingredients") || "").trim();
+      if ((selectedFoods.length || typedIngredients) && dataForValidation.get("foodConfirmed") !== "yes") {
+        showPage("start");
+        setStep(2);
+        setFormError("");
+        showConfirmFoodModal();
+        return;
+      }
+
+      const message = validateStep(2);
+      if (message) {
+        showPage("start");
+        setStep(2);
+        setFormError(message);
+        return;
+      }
+      const data = collectData();
+      const parsed = parseIngredients(data.ingredients);
+      const targets = estimateTargets(data);
+      const workoutMeals = Object.fromEntries(
+        workoutMealModes().map((mode, index) => [
+          mode.key,
+          buildMeals({ ...data, workoutMode: mode.key }, parsed.matched, targets, index)
+        ])
+      );
+      const days = [workoutMeals[data.workoutMode] || workoutMeals.strength_cardio];
+      currentPlan = {
+        data,
+        foods: parsed.matched,
+        custom: parsed.custom,
+        targets,
+        days,
+        workoutMeals,
+        activeWorkoutMode: data.workoutMode || "strength_cardio"
+      };
+      currentDay = 0;
+      renderSummary(targets);
+      renderMeals(currentDay);
+      renderPaidPreview();
+      renderList(howToEat, buildHowToEat(data, targets));
+      renderCheckins();
+      leadCopy.textContent = "免费版已生成基础食谱、运动日切换、换餐和打卡。7-14 天详细计划、外卖替换和趋势调整属于后续详细版。";
+      saveLocal("fitMealPlannerLast", JSON.stringify({ ...data, generatedAt: Date.now() }));
+      setStep(2);
+      showPage("result");
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      if (currentStep < 2) {
+        trySetStep(currentStep + 1);
+        return;
+      }
+      generatePlan();
+    });
+
+    form.addEventListener("click", event => {
+      const next = event.target.closest ? event.target.closest("[data-next]") : null;
+      const prev = event.target.closest ? event.target.closest("[data-prev]") : null;
+      if (next) trySetStep(Number(next.dataset.next));
+      if (prev) setStep(Number(prev.dataset.prev));
+    });
+
+    mealList.addEventListener("click", event => {
+      const modeButton = event.target.closest ? event.target.closest("[data-meal-mode]") : null;
+      if (modeButton && currentPlan) {
+        currentPlan.activeWorkoutMode = modeButton.dataset.mealMode;
+        renderMeals();
+        renderPaidPreview();
+        return;
+      }
+      const button = event.target.closest ? event.target.closest("[data-replace-meal]") : null;
+      if (button) showReplaceMealModal(Number(button.dataset.replaceMeal));
+    });
+
+    document.querySelectorAll("[data-next]").forEach(button => {
+      button.addEventListener("click", () => trySetStep(Number(button.dataset.next)));
+    });
+
+    document.querySelectorAll("[data-prev]").forEach(button => {
+      button.addEventListener("click", () => setStep(Number(button.dataset.prev)));
+    });
+
+    beginPlanBtn.addEventListener("click", () => {
+      setStep(0);
+      showPage("start");
+    });
+
+    continuePlanBtn.addEventListener("click", () => {
+      const last = readLocal("fitMealPlannerLast");
+      if (!last) {
+        setStep(0);
+        showPage("start");
+        return;
+      }
+      try {
+        const data = JSON.parse(last);
+        applySavedData(data);
+        document.querySelector("#foodConfirmed").checked = true;
+        generatePlan();
+      } catch (error) {
+        setStep(0);
+        showPage("start");
+      }
+    });
+
+    progressSteps.forEach(item => {
+      item.addEventListener("click", () => {
+        const targetStep = Number(item.dataset.progress);
+        if (targetStep <= currentStep) setStep(targetStep);
+      });
+    });
+
+    editPlanBtn.addEventListener("click", () => showPage("start"));
+    adjustPlanBtn.addEventListener("click", () => {
+      showLockedFeature("打卡趋势调整");
+    });
+    backToFoodsBtn.addEventListener("click", hideConfirmFoodModal);
+    confirmFoodsBtn.addEventListener("click", () => {
+      document.querySelector("#foodConfirmed").checked = true;
+      hideConfirmFoodModal();
+      generatePlan();
+    });
+    confirmFoodModal.addEventListener("click", event => {
+      if (event.target === confirmFoodModal) hideConfirmFoodModal();
+    });
+    closeLockedFeatureBtn.addEventListener("click", hideLockedFeature);
+    focusLeadBtn.addEventListener("click", () => {
+      hideLockedFeature();
+      document.querySelector("#leadName").focus();
+    });
+    lockedFeatureModal.addEventListener("click", event => {
+      if (event.target === lockedFeatureModal) hideLockedFeature();
+    });
+
+    replaceMealModal.addEventListener("click", event => {
+      if (event.target === replaceMealModal) hideReplaceMealModal();
+      const button = event.target.closest ? event.target.closest("[data-replace-kind]") : null;
+      if (button && pendingReplaceMealIndex !== null) {
+        replaceMeal(pendingReplaceMealIndex, button.dataset.replaceKind);
+      }
+    });
+
+    closeReplaceMealBtn.addEventListener("click", hideReplaceMealModal);
+
+    document.querySelectorAll("[data-locked-feature]").forEach(button => {
+      button.addEventListener("click", () => showLockedFeature(button.dataset.lockedFeature));
+    });
+
+    paidPreview.addEventListener("click", event => {
+      const button = event.target.closest ? event.target.closest("[data-locked-feature]") : null;
+      if (button) showLockedFeature(button.dataset.lockedFeature);
+    });
+
+    ingredientPreset.addEventListener("change", () => {
+      const presets = {
+        home: ["鸡胸肉", "鸡蛋", "糙米", "西兰花", "番茄", "香蕉", "橄榄油"],
+        student: ["鸡蛋", "燕麦", "脱脂奶", "香蕉", "黄瓜", "魔芋"],
+        takeout: ["鸡蛋", "蛋白粉", "米饭", "生菜", "番茄", "黄瓜"]
+      };
+      if (!ingredientPreset.value) return;
+      setSelectedFoods(presets[ingredientPreset.value] || []);
+      ingredientPreset.value = "";
+    });
+
+    document.querySelector("#resetBtn").addEventListener("click", () => {
+      form.reset();
+      document.querySelector("#ingredients").value = "";
+      document.querySelector("#foodConfirmed").checked = false;
+      setSelectedFoods([]);
+      setSelectedSupplements([]);
+      removeLocal("fitMealPlannerLast");
+      currentPlan = null;
+      setStep(0);
+      showPage("welcome");
+      mealList.hidden = true;
+      emptyState.hidden = false;
+      howToEat.innerHTML = "";
+      ["targetKcal", "proteinTarget", "carbTarget", "fatTarget"].forEach(id => {
+        document.querySelector(`#${id}`).textContent = "--";
+      });
+      document.querySelector("#targetNote").textContent = "填写资料后生成";
+      document.querySelector("#mealSubtitle").textContent = "这一套可以连续执行，再根据打卡结果调整。";
+      renderPaidPreview();
+    });
+
+    document.querySelector("#printBtn").addEventListener("click", () => {
+      if (!currentPlan) {
+        showPage("start");
+        setStep(0);
+        setFormError("请先生成食谱，再导出。");
+        return;
+      }
+      showLockedFeature("PDF 导出");
+    });
+
+    prevMonthBtn.addEventListener("click", () => {
+      currentCalendarDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() - 1, 1);
+      renderCheckins();
+    });
+
+    nextMonthBtn.addEventListener("click", () => {
+      currentCalendarDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 1);
+      renderCheckins();
+    });
+
+    checkinCalendar.addEventListener("click", event => {
+      const dayButton = event.target.closest ? event.target.closest("[data-checkin-date]") : null;
+      if (!dayButton) return;
+      const dateValue = dayButton.dataset.checkinDate;
+      const record = getCheckins().find(item => item.date === dateValue);
+      checkinDate.value = dateValue;
+      currentCalendarDate = parseDateValue(dateValue);
+      if (record) {
+        checkinWeight.value = record.weight;
+        bathroomStatus.value = record.bathroom;
+      } else {
+        checkinWeight.value = "";
+        bathroomStatus.value = "pee";
+      }
+      renderCheckins();
+    });
+
+    checkinDate.addEventListener("change", () => {
+      currentCalendarDate = parseDateValue(checkinDate.value);
+      renderCheckins();
+    });
+
+    bindChoiceLabels();
+    bindPantryControls();
+
+    leadForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      const data = new FormData(leadForm);
+      const lead = {
+        name: data.get("leadName") || "未填写称呼",
+        contact: data.get("leadContact") || "未填写联系方式",
+        need: data.get("leadNeed"),
+        createdAt: new Date().toISOString(),
+        planGoal: currentPlan ? currentPlan.targets.goalLabel : "未生成方案"
+      };
+      if (!String(lead.contact).trim() || lead.contact === "未填写联系方式") {
+        leadStatus.textContent = "请先填写联系方式，方便后续发送详细版食谱。";
+        return;
+      }
+
+      try {
+        await submitLeadToBackend(lead);
+        leadStatus.textContent = `已提交领取需求：${lead.name} / ${lead.need}`;
+        leadForm.reset();
+      } catch (error) {
+        let leads = [];
+        try {
+          const saved = JSON.parse(readLocal("fitMealPlannerLeads", "[]"));
+          leads = Array.isArray(saved) ? saved : [];
+        } catch (parseError) {
+          leads = [];
+        }
+        leads.push(lead);
+        saveLocal("fitMealPlannerLeads", JSON.stringify(leads));
+        leadStatus.textContent = `后端未连接，领取需求已暂存在这台设备：${lead.name} / ${lead.need}`;
+        leadForm.reset();
+      }
+    });
+
+    checkinForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const weight = Number(checkinWeight.value);
+      if (!Number.isFinite(weight) || weight < 35 || weight > 220) {
+        checkinAdvice.textContent = "请填写有效体重，单位是 kg。";
+        return;
+      }
+      const record = {
+        date: checkinDate.value || todayValue(),
+        weight: Number(weight.toFixed(1)),
+        bathroom: bathroomStatus.value,
+        createdAt: new Date().toISOString()
+      };
+      const records = getCheckins().filter(item => item.date !== record.date);
+      records.push(record);
+      saveCheckins(records.sort((a, b) => a.date.localeCompare(b.date)));
+      currentCalendarDate = parseDateValue(record.date);
+      checkinDate.value = todayValue();
+      checkinWeight.value = "";
+      bathroomStatus.value = "pee";
+      renderCheckins();
+    });
+
+    window.addEventListener("load", () => {
+      checkinDate.value = todayValue();
+      currentCalendarDate = parseDateValue(checkinDate.value);
+      renderCheckins();
+      const last = readLocal("fitMealPlannerLast");
+      if (!last) {
+        continuePlanBtn.hidden = true;
+        setStep(0);
+        showPage("welcome");
+        return;
+      }
+      try {
+        const data = JSON.parse(last);
+        if (Date.now() - data.generatedAt > 7 * 24 * 60 * 60 * 1000) {
+          continuePlanBtn.hidden = true;
+          setStep(0);
+          showPage("welcome");
+          return;
+        }
+        applySavedData(data);
+        continuePlanBtn.hidden = false;
+        setStep(0);
+        showPage("welcome");
+      } catch (error) {
+        continuePlanBtn.hidden = true;
+        setStep(0);
+        showPage("welcome");
+      }
+    });
+  </script>
+</body>
+</html>
