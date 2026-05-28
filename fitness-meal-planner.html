@@ -2804,6 +2804,11 @@
       magnesium: "镁"
     };
 
+    const supabaseConfig = {
+      url: "https://tpwyjhukzckgyamgmlee.supabase.co",
+      anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwd3lqaHVremNrZ3lhbWdtbGVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NTM5MDcsImV4cCI6MjA5NTUyOTkwN30.MVHQfmVzhCIgVebEI9YJDxDe1MHbW6fOf1oYzXQl6Eo"
+    };
+
     const form = document.querySelector("#plannerForm");
     const leadForm = document.querySelector("#leadForm");
     const checkinForm = document.querySelector("#checkinForm");
@@ -3144,7 +3149,39 @@
       return true;
     }
 
+    async function submitLeadToSupabase(lead) {
+      const response = await fetch(`${supabaseConfig.url}/rest/v1/trial_leads`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": supabaseConfig.anonKey,
+          "Authorization": `Bearer ${supabaseConfig.anonKey}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({
+          name: lead.name,
+          contact: lead.contact,
+          need: lead.need,
+          plan_goal: lead.planGoal,
+          created_at: lead.createdAt,
+          user_agent: navigator.userAgent || "",
+          ip: ""
+        })
+      });
+      if (!response.ok) {
+        const message = await response.text().catch(() => "");
+        throw new Error(message || "Supabase 提交失败");
+      }
+      return { ok: true };
+    }
+
     async function submitLeadToBackend(lead) {
+      const hasLocalBackend = ["localhost", "127.0.0.1"].includes(location.hostname);
+      const isStaticHost = location.protocol === "file:" || location.hostname.endsWith("github.io");
+      if (isStaticHost || !hasLocalBackend) {
+        return submitLeadToSupabase(lead);
+      }
+
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

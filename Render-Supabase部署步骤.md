@@ -1,5 +1,77 @@
 # Render + Supabase 部署步骤
 
+## 当前推荐
+
+Render 当前可能要求新账号绑定银行卡。
+
+如果不想绑卡，先用：
+
+```text
+GitHub Pages + Supabase
+```
+
+GitHub Pages 放网页。
+
+Supabase 保存“领取详细版食谱”的提交记录。
+
+## GitHub Pages 部署
+
+1. 打开 GitHub 仓库：
+
+```text
+https://github.com/sengwuk/fitness-meal-planner
+```
+
+2. 进入：
+
+```text
+Settings -> Pages
+```
+
+3. Source 选择：
+
+```text
+Deploy from a branch
+```
+
+4. Branch 选择：
+
+```text
+main
+```
+
+5. Folder 选择：
+
+```text
+/(root)
+```
+
+6. 保存后等待 1-3 分钟。
+
+网页地址通常是：
+
+```text
+https://sengwuk.github.io/fitness-meal-planner/
+```
+
+## Supabase 建表
+
+进入 Supabase：
+
+```text
+SQL Editor -> New query
+```
+
+复制运行项目里的：
+
+```text
+supabase-setup.sql
+```
+
+这个 SQL 会创建 `trial_leads` 表，并允许前端提交领取需求，但不允许前端读取用户联系方式。
+
+## Render 备用方案
+
 这个方案不需要你买服务器，也不需要 cpolar 实名认证。
 
 Render 用来运行网页后端。
@@ -124,4 +196,3 @@ https://fitness-meal-planner.onrender.com/api/leads?token=你的ADMIN_TOKEN
 这是免费测试阶段可以接受的问题。
 
 正式收费后建议升级套餐或换正式服务器。
-
