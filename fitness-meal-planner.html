@@ -2247,26 +2247,10 @@
               <div class="field">
                 <label for="activity">日常活动量</label>
                 <select id="activity" name="activity">
-                  <option value="1.2">久坐：大多数时间坐着</option>
-                  <option value="1.375" selected>轻活动：通勤、家务、偶尔走动</option>
-                  <option value="1.55">中等活动：每天走路较多或站立工作</option>
-                  <option value="1.725">高活动：体力劳动或大量走动</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="trainingTime">训练时间</label>
-                <select id="trainingTime" name="trainingTime">
-                  <option value="morning">上午</option>
-                  <option value="noon">中午</option>
-                  <option value="evening" selected>晚上</option>
-                  <option value="none">不固定</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="meals">每日餐数</label>
-                <select id="meals" name="meals">
-                  <option value="3" selected>3 餐</option>
-                  <option value="4">3 餐 + 加餐</option>
+                  <option value="1.2">久坐少动：上班/上课坐着多</option>
+                  <option value="1.375" selected>普通走动：通勤、家务、偶尔散步</option>
+                  <option value="1.55">规律运动：健身房、跑步、骑车或球类</option>
+                  <option value="1.725">高活动：体力劳动、户外运动或高频球类</option>
                 </select>
               </div>
             </div>
@@ -2457,6 +2441,16 @@
                 <span>让食谱更贴近日常</span>
               </div>
               <div class="mini-selects">
+                <div class="field">
+                  <label for="meals">每日餐数</label>
+                  <select id="meals" name="meals">
+                    <option value="1">1 餐集中吃</option>
+                    <option value="2">2 餐</option>
+                    <option value="3" selected>3 餐</option>
+                    <option value="4">3 餐 + 加餐</option>
+                    <option value="5">少量多餐</option>
+                  </select>
+                </div>
                 <div class="field">
                   <label for="cooking">吃饭方式</label>
                   <select id="cooking" name="cooking">
@@ -3108,7 +3102,6 @@
       document.querySelector("#height").value = data.height || 175;
       document.querySelector("#weight").value = data.weight || 77;
       document.querySelector("#activity").value = String(data.activity || 1.375);
-      document.querySelector("#trainingTime").value = data.trainingTime || "evening";
       document.querySelector("#comboStrengthMinutes").value = data.comboStrengthMinutes ?? data.strengthMinutes ?? 45;
       document.querySelector("#comboCardioMinutes").value = data.comboCardioMinutes ?? data.cardioMinutes ?? 25;
       document.querySelector("#strengthMinutes").value = data.strengthMinutes ?? 45;
@@ -3509,7 +3502,8 @@
       const lunchTakeout = cookingMode === "work_lunch_takeout" || cookingMode === "takeout_main";
       const lunchPrep = cookingMode === "work_lunch_prep";
       const hasTrainingToday = workoutProfile.hasTraining;
-      const includeSnack = data.meals === 4 || hasTrainingToday;
+      const mealPattern = String(data.meals || "3");
+      const includeSnack = ["4", "5"].includes(mealPattern) || hasTrainingToday;
       const kcalBreakfast = Math.round(targets.targetKcal * workoutProfile.breakfastRatio);
       const kcalLunch = Math.round(targets.targetKcal * workoutProfile.lunchRatio);
       const kcalDinner = Math.round(targets.targetKcal * workoutProfile.dinnerRatio);
@@ -3580,7 +3574,7 @@
 
       if (includeSnack) {
         meals.splice(2, 0, {
-          time: hasTrainingToday && data.trainingTime === "evening" ? "练前/练后" : "加餐",
+          time: hasTrainingToday ? "训练前后/加餐" : "加餐",
           title: `${workoutProfile.shortLabel}加餐：${snackName}`,
           kcal: kcalSnack,
           desc: hasTrainingToday
@@ -3592,6 +3586,57 @@
           seasoning: "加餐通常不需要调味；如果喝蛋白粉，用水或脱脂奶 250ml 冲。",
           method: "做法：水果直接吃；蛋白粉摇匀即可；训练前避免高油食物。",
           note: "加餐服务于训练和饱腹，不随手吃零食。"
+        });
+      }
+
+      if (mealPattern === "1") {
+        meals.splice(0, meals.length, {
+          time: "集中主餐",
+          title: `${workoutProfile.shortLabel}一餐制：${proteinA.name} + ${carbA.name} + ${veg.name}`,
+          kcal: targets.targetKcal,
+          desc: `${proteinA.name} ${lunchProtein + dinnerProtein}g + ${carbA.name} ${lunchCarb + dinnerCarb}g + ${veg.name} ${lunchVeg + dinnerVeg}g。`,
+          visual: noScaleText({ protein: lunchProtein + dinnerProtein, carb: lunchCarb + dinnerCarb, veg: lunchVeg + dinnerVeg }),
+          seasoning: `调味：${seasoningText(lowSalt)}`,
+          method: "做法：优先做成一大份盖饭/拌饭/餐盒；如果吃不下，不要硬塞，改成 2 餐更稳。",
+          note: "一餐制不适合所有人，训练日更建议拆成 2 餐以上。"
+        });
+      }
+
+      if (mealPattern === "2") {
+        meals.splice(0, meals.length,
+          {
+            time: "第一餐",
+            title: `${workoutProfile.shortLabel}第一餐：${proteinARecipe} + ${carbA.name}`,
+            kcal: kcalBreakfast + kcalLunch,
+            desc: `${proteinA.name} ${breakfastProtein + lunchProtein}g + ${carbA.name} ${breakfastCarb + lunchCarb}g + ${veg.name} ${Math.round(lunchVeg * .7)}g。`,
+            visual: noScaleText({ protein: breakfastProtein + lunchProtein, carb: breakfastCarb + lunchCarb, veg: Math.round(lunchVeg * .7) }),
+            seasoning: `调味：${seasoningText(lowSalt)}`,
+            method: "做法：把早餐和午餐合并成一份大餐，先吃蛋白和蔬菜，再吃主食。",
+            note: "两餐制重点是蛋白要吃够，不要只少吃一顿。"
+          },
+          {
+            time: "第二餐",
+            title: `${workoutProfile.shortLabel}第二餐：${dinnerName}`,
+            kcal: kcalDinner + kcalSnack,
+            desc: `${proteinB.name} ${dinnerProtein}g + ${veg.name} ${dinnerVeg}g + ${carbB.name} ${dinnerCarb}g；训练日可加水果或蛋白加餐。`,
+            visual: noScaleText({ protein: dinnerProtein, carb: dinnerCarb, veg: dinnerVeg, extra: hasTrainingToday ? "训练后水果约 1 拳" : "" }),
+            seasoning: cookingMode === "takeout_main" ? "外卖调味：少酱汁、少油，汤汁不喝完。" : `调味：${seasoningText(lowSalt)}`,
+            method: "做法：晚餐控制油和酱汁；如果训练后很饿，先补蛋白，不随手吃零食。",
+            note: workoutProfile.dinnerRule
+          }
+        );
+      }
+
+      if (mealPattern === "5") {
+        meals.push({
+          time: "备用小餐",
+          title: `${workoutProfile.shortLabel}备用：蛋白/水果小餐`,
+          kcal: 120,
+          desc: fruit ? `${fruit.name} ${fruit.unit}，或 ${proteinA.name} 少量补蛋白。` : `${proteinA.name} 少量补蛋白；想吃水果时回到食材里补充水果。`,
+          visual: noScaleText({ protein: proteinA.name === "蛋白粉" ? 0 : 60, extra: fruit ? "水果约半拳到 1 拳" : "蛋白粉半勺到 1 勺" }),
+          seasoning: "备用小餐通常不需要调味。",
+          method: "做法：放在下午或睡前 2 小时前，真正饿再吃。",
+          note: "少量多餐不是多吃零食，而是把总量拆开。"
         });
       }
 
@@ -3973,7 +4018,7 @@
         height: readNumber(data, "height", 175),
         weight: readNumber(data, "weight", 77),
         activity: readNumber(data, "activity", 1.375),
-        trainingTime: data.get("trainingTime"),
+        trainingTime: "none",
         comboStrengthMinutes: readNumberWithZero(data, "comboStrengthMinutes", 45),
         comboCardioMinutes: readNumberWithZero(data, "comboCardioMinutes", 25),
         strengthMinutes: readNumberWithZero(data, "strengthMinutes", 45),
