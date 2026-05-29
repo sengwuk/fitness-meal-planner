@@ -2257,11 +2257,21 @@
 
             <div class="setup-block compact-workout">
               <div class="setup-block-title">
-                <h4>运动量</h4>
-                <span>按分钟分配食物</span>
+                <h4>运动状态</h4>
+                <span>先选模式，再填时间</span>
+              </div>
+              <div class="field full">
+                <label for="workoutMode">今天怎么练</label>
+                <select id="workoutMode" name="workoutMode">
+                  <option value="strength_cardio" selected>力量 + 有氧</option>
+                  <option value="strength">纯力量</option>
+                  <option value="cardio">纯有氧</option>
+                  <option value="leg">练腿日</option>
+                  <option value="rest">休息日 / 不运动</option>
+                </select>
               </div>
               <div class="training-volume-grid" aria-label="填写运动分钟数">
-                <div class="training-volume-card">
+                <div class="training-volume-card" data-workout-kind="strength_cardio">
                   <h5>力量 + 有氧日</h5>
                   <div class="training-volume-pair">
                     <div class="field">
@@ -2274,33 +2284,33 @@
                     </div>
                   </div>
                 </div>
-                <div class="training-volume-card">
+                <div class="training-volume-card" data-workout-kind="strength">
                   <h5>纯力量日</h5>
                   <div class="field">
                     <label for="strengthMinutes">力量训练</label>
                     <input id="strengthMinutes" name="strengthMinutes" type="number" min="0" max="180" step="5" value="60" inputmode="numeric">
                   </div>
                 </div>
-                <div class="training-volume-card">
+                <div class="training-volume-card" data-workout-kind="cardio">
                   <h5>纯有氧日</h5>
                   <div class="field">
                     <label for="cardioMinutes">有氧</label>
                     <input id="cardioMinutes" name="cardioMinutes" type="number" min="0" max="180" step="5" value="40" inputmode="numeric">
                   </div>
                 </div>
-                <div class="training-volume-card">
+                <div class="training-volume-card" data-workout-kind="leg">
                   <h5>练腿日</h5>
                   <div class="field">
                     <label for="legMinutes">练腿</label>
                     <input id="legMinutes" name="legMinutes" type="number" min="0" max="180" step="5" value="60" inputmode="numeric">
                   </div>
                 </div>
-                <div class="rest-day-note">
+                <div class="rest-day-note" data-workout-kind="rest">
                   <strong>休息日</strong>
                   <span>不用填时间，自动按少主食、多蔬菜、蛋白不减生成。</span>
                 </div>
               </div>
-              <div class="hint">不同训练日可以填不同时间，生成后会分别分配力量+有氧、练腿、纯力量、有氧、休息日的早中晚。</div>
+              <div class="hint">选到对应模式后，只显示要填的时间。休息日不用填时间。</div>
             </div>
 
             <div class="setup-block pantry-groups compact-pantry" aria-label="食材选择">
@@ -2829,6 +2839,8 @@
     const addSupplementBtn = document.querySelector("#addSupplementBtn");
     const selectedSupplementTags = document.querySelector("#selectedSupplementTags");
     const selectedSupplementsStore = document.querySelector("#selectedSupplementsStore");
+    const workoutModeSelect = document.querySelector("#workoutMode");
+    const workoutPanels = document.querySelectorAll("[data-workout-kind]");
     const formError = document.querySelector("#formError");
     const checkinDate = document.querySelector("#checkinDate");
     const checkinWeight = document.querySelector("#checkinWeight");
@@ -2976,6 +2988,19 @@
       button.innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>${escapeHtml(text)}`;
     }
 
+    function updateWorkoutModeView() {
+      if (!workoutModeSelect) return;
+      const mode = workoutModeSelect.value || "strength_cardio";
+      workoutPanels.forEach(panel => {
+        const kind = panel.dataset.workoutKind;
+        const show =
+          mode === "rest"
+            ? kind === "rest"
+            : mode === kind || (mode === "strength_cardio" && kind === "strength_cardio");
+        panel.hidden = !show;
+      });
+    }
+
     function setFormError(message) {
       formError.textContent = message;
       formError.classList.toggle("show", Boolean(message));
@@ -3070,6 +3095,10 @@
       document.querySelector("#age").value = data.age || 28;
       document.querySelector("#height").value = data.height || 175;
       document.querySelector("#weight").value = data.weight || 77;
+      if (workoutModeSelect) {
+        workoutModeSelect.value = data.workoutMode || "strength_cardio";
+      }
+      updateWorkoutModeView();
       document.querySelector("#comboStrengthMinutes").value = data.comboStrengthMinutes ?? data.strengthMinutes ?? 45;
       document.querySelector("#comboCardioMinutes").value = data.comboCardioMinutes ?? data.cardioMinutes ?? 25;
       document.querySelector("#strengthMinutes").value = data.strengthMinutes ?? 45;
@@ -3992,7 +4021,7 @@
         strengthMinutes: readNumberWithZero(data, "strengthMinutes", 45),
         cardioMinutes: readNumberWithZero(data, "cardioMinutes", 25),
         legMinutes: readNumberWithZero(data, "legMinutes", 60),
-        workoutMode: "strength_cardio",
+        workoutMode: data.get("workoutMode") || "strength_cardio",
         meals: data.get("meals"),
         ingredients,
         typedIngredients,
@@ -4244,6 +4273,10 @@
 
     bindChoiceLabels();
     bindPantryControls();
+    updateWorkoutModeView();
+    if (workoutModeSelect) {
+      workoutModeSelect.addEventListener("change", updateWorkoutModeView);
+    }
 
     leadForm.addEventListener("submit", async event => {
       event.preventDefault();
