@@ -1765,6 +1765,32 @@
       font-weight: 800;
     }
 
+    .checkin-reminder {
+      border: 1px solid #d7b46a;
+      border-radius: 8px;
+      background: #fff8eb;
+      padding: 12px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .checkin-reminder h3 {
+      margin: 0;
+      color: #7c4a03;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .checkin-reminder .info-list {
+      gap: 8px;
+    }
+
+    .checkin-reminder .info-list li {
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
     .checkin-log {
       display: grid;
       gap: 8px;
@@ -2531,7 +2557,7 @@
       <div class="page-head">
         <div class="page-title">
           <h2>为您量身定做的食谱</h2>
-          <p>根据目标、身体信息、食材和运动模式生成，先执行这一套，再看打卡结果调整。</p>
+          <p>根据目标、身体信息、食材和一周运动安排生成，先执行这一套，再看打卡结果调整。</p>
         </div>
         <button class="btn" type="button" id="editPlanBtn">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
@@ -2540,12 +2566,35 @@
       </div>
 
       <section class="result" aria-live="polite">
+        <div class="summary-grid" id="summaryGrid">
+          <article class="metric">
+            <span>目标热量</span>
+            <strong id="targetKcal">--</strong>
+            <small id="targetNote">填写资料后生成</small>
+          </article>
+          <article class="metric">
+            <span>蛋白质</span>
+            <strong id="proteinTarget">--</strong>
+            <small>优先保证</small>
+          </article>
+          <article class="metric">
+            <span>碳水</span>
+            <strong id="carbTarget">--</strong>
+            <small>围绕训练安排</small>
+          </article>
+          <article class="metric">
+            <span>脂肪</span>
+            <strong id="fatTarget">--</strong>
+            <small>不要过低</small>
+          </article>
+        </div>
+
         <div class="dashboard">
           <article class="card">
             <div class="card-head">
               <div>
                 <h2>一日三餐食谱</h2>
-                <p id="mealSubtitle">今天是什么训练？点下面标签，直接看对应三餐。</p>
+                <p id="mealSubtitle">按你的一周运动安排生成，需要看训练日或休息日时可切换。</p>
               </div>
             </div>
             <div class="card-body">
@@ -2606,6 +2655,10 @@
                   保存打卡
                 </button>
                 <div class="checkin-advice" id="checkinAdvice">连续记录 7-14 天后，会提示是否需要调整食谱。</div>
+                <div class="checkin-reminder">
+                  <h3>执行提醒</h3>
+                  <ul class="info-list" id="howToEat"></ul>
+                </div>
                 <button class="btn" type="button" id="adjustPlanBtn">
                   <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18"/><path d="M7 7h10"/><path d="M7 17h10"/><path d="M12 3v18"/></svg>
                   根据打卡调整食谱
@@ -2614,41 +2667,6 @@
               </div>
             </div>
           </form>
-        </article>
-
-        <div class="summary-grid" id="summaryGrid">
-          <article class="metric">
-            <span>目标热量</span>
-            <strong id="targetKcal">--</strong>
-            <small id="targetNote">填写资料后生成</small>
-          </article>
-          <article class="metric">
-            <span>蛋白质</span>
-            <strong id="proteinTarget">--</strong>
-            <small>优先保证</small>
-          </article>
-          <article class="metric">
-            <span>碳水</span>
-            <strong id="carbTarget">--</strong>
-            <small>围绕训练安排</small>
-          </article>
-          <article class="metric">
-            <span>脂肪</span>
-            <strong id="fatTarget">--</strong>
-            <small>不要过低</small>
-          </article>
-        </div>
-
-        <article class="card">
-          <div class="card-head">
-            <div>
-              <h2>执行提醒</h2>
-              <p>只看这 3 条就够了</p>
-            </div>
-          </div>
-          <div class="card-body">
-            <ul class="info-list" id="howToEat"></ul>
-          </div>
         </article>
 
         <article class="card lead-card">
@@ -3493,6 +3511,17 @@
       ];
     }
 
+    function weeklyTrainingPlanText(value) {
+      const labels = {
+        none: "暂时不运动",
+        light: "每周 1-2 次轻运动",
+        regular: "每周 3-4 次规律训练",
+        frequent: "每周 5 次以上高频训练",
+        flexible: "不固定，球类 / 户外为主"
+      };
+      return labels[value] || labels.regular;
+    }
+
     function foodOffsetForKind(kind, offset, baseOffset = 0) {
       if (kind === "protein") return { protein: baseOffset + offset, carb: baseOffset, veg: baseOffset };
       if (kind === "carb") return { protein: baseOffset, carb: baseOffset + offset, veg: baseOffset };
@@ -3673,8 +3702,9 @@
     }
 
     function buildHowToEat(data, targets) {
+      const planText = weeklyTrainingPlanText(data.weeklyTrainingPlan);
       return [
-        `这套餐先吃 10-14 天，不要天天改。目标约 ${targets.targetKcal} kcal/天。`,
+        `按「${planText}」先吃 10-14 天，不要天天改。目标约 ${targets.targetKcal} kcal/天。`,
         "每天早上打卡体重，尽量同一时间、同一卫生间状态。",
         "连续 7-14 天再看趋势：不变再调整，掉太快再加量。"
       ];
@@ -3750,19 +3780,30 @@
 
     function renderMeals() {
       if (!currentPlan) return;
-      const activeMode = currentPlan.activeWorkoutMode || currentPlan.data.workoutMode || "strength_cardio";
+      const availableModes = currentPlan.data.weeklyTrainingPlan === "none"
+        ? workoutMealModes().filter(mode => mode.key === "rest")
+        : workoutMealModes();
+      let activeMode = currentPlan.activeWorkoutMode || currentPlan.data.workoutMode || "strength_cardio";
+      if (!availableModes.some(mode => mode.key === activeMode)) activeMode = availableModes[0].key;
       const meals = currentPlan.workoutMeals?.[activeMode] || currentPlan.days[0] || [];
       const workoutProfile = workoutNutritionProfile(activeMode, currentPlan.data);
+      const planText = weeklyTrainingPlanText(currentPlan.data.weeklyTrainingPlan);
+      const trainingMinuteText = currentPlan.data.weeklyTrainingPlan === "none"
+        ? "不用填写运动时间"
+        : `每次约 ${currentPlan.data.weeklyTrainingMinutes || 60} 分钟`;
+      const modeNote = currentPlan.data.weeklyTrainingPlan === "none"
+        ? "你选择了暂时不运动，当前食谱按休息日生成：主食略少，蛋白和蔬菜保留。"
+        : `你的安排：${planText}，${trainingMinuteText}。当前显示 ${workoutProfile.label}，已调整早中晚主食、蛋白和蔬菜克数。`;
       mealList.innerHTML = `
         <div class="meal-mode-switch" aria-label="按运动日查看食谱">
           <div class="tabs">
-            ${workoutMealModes().map(mode => `
+            ${availableModes.map(mode => `
               <button class="tab ${mode.key === activeMode ? "active" : ""}" type="button" data-meal-mode="${mode.key}">
                 ${escapeHtml(mode.label)}
               </button>
             `).join("")}
           </div>
-          <div class="mode-note">${escapeHtml(workoutProfile.label)}：已按这个运动日调整早中晚的主食、蛋白和蔬菜克数。</div>
+          <div class="mode-note">${escapeHtml(modeNote)}</div>
         </div>
         <div class="meal-table-wrap">
           <table class="meal-table">
@@ -3794,7 +3835,9 @@
       `;
       emptyState.hidden = true;
       mealList.hidden = false;
-      document.querySelector("#mealSubtitle").textContent = "今天是什么训练？点下面标签，直接看对应三餐。";
+      document.querySelector("#mealSubtitle").textContent = currentPlan.data.weeklyTrainingPlan === "none"
+        ? "按不运动/休息日生成，先稳定执行，再根据打卡调整。"
+        : "按你的一周运动安排生成，需要看训练日或休息日时可切换。";
     }
 
     function renderPaidPreview() {
@@ -4236,7 +4279,7 @@
         document.querySelector(`#${id}`).textContent = "--";
       });
       document.querySelector("#targetNote").textContent = "填写资料后生成";
-      document.querySelector("#mealSubtitle").textContent = "这一套可以连续执行，再根据打卡结果调整。";
+      document.querySelector("#mealSubtitle").textContent = "按你的一周运动安排生成，需要看训练日或休息日时可切换。";
       renderPaidPreview();
     });
 
