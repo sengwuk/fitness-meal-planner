@@ -391,70 +391,55 @@
       font-size: 16px;
     }
 
-    .training-volume-grid {
+    .weekly-training-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
+      gap: 10px;
       align-items: stretch;
     }
 
-    .training-volume-card {
+    .weekly-training-detail {
       border: 1px solid var(--line);
-      background: #fff;
       border-radius: 8px;
-      padding: 8px;
+      background: rgba(247, 250, 246, .82);
+      padding: 10px;
       display: grid;
-      gap: 7px;
+      gap: 10px;
     }
 
-    .training-volume-card h5 {
-      margin: 0;
-      color: #253a33;
-      font-size: 15px;
-      line-height: 1.2;
-      letter-spacing: 0;
+    .weekly-training-detail[hidden] {
+      display: none;
     }
 
-    .training-volume-pair {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 7px;
-    }
-
-    .training-volume-grid .field {
-      gap: 5px;
-    }
-
-    .training-volume-grid label {
-      font-size: 14px;
-    }
-
-    .training-volume-grid input {
-      text-align: center;
-      font-weight: 900;
-    }
-
-    .rest-day-note {
+    .weekly-training-note {
       border: 1px solid var(--line-strong);
       border-radius: 8px;
-      background: rgba(247, 250, 246, .86);
-      padding: 8px 10px;
-      display: grid;
-      align-content: center;
-      gap: 4px;
-    }
-
-    .rest-day-note strong {
-      color: #253a33;
-      font-size: 14px;
-      line-height: 1.2;
-    }
-
-    .rest-day-note span {
+      background: #fff;
+      padding: 10px 12px;
       color: var(--muted);
-      font-size: 13px;
-      line-height: 1.35;
-      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 800;
+    }
+
+    .weekly-training-note.full {
+      grid-column: 1 / -1;
+    }
+
+    .weekly-training-note strong {
+      display: block;
+      color: #253a33;
+      font-size: 15px;
+      margin-bottom: 3px;
+    }
+
+    .weekly-training-grid .field {
+      gap: 6px;
+    }
+
+    .weekly-training-grid select,
+    .weekly-training-grid input {
+      font-weight: 900;
     }
 
     .optional-details {
@@ -1964,7 +1949,7 @@
         grid-template-columns: 1fr;
       }
 
-      .training-volume-grid {
+      .weekly-training-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
@@ -2257,60 +2242,55 @@
 
             <div class="setup-block compact-workout">
               <div class="setup-block-title">
-                <h4>运动状态</h4>
-                <span>先选模式，再填时间</span>
+                <h4>一周运动安排</h4>
+                <span>不运动就不用填时间</span>
               </div>
-              <div class="field full">
-                <label for="workoutMode">今天怎么练</label>
-                <select id="workoutMode" name="workoutMode">
-                  <option value="strength_cardio" selected>力量 + 有氧</option>
-                  <option value="strength">纯力量</option>
-                  <option value="cardio">纯有氧</option>
-                  <option value="leg">练腿日</option>
-                  <option value="rest">休息日 / 不运动</option>
-                </select>
-              </div>
-              <div class="training-volume-grid" aria-label="填写运动分钟数">
-                <div class="training-volume-card" data-workout-kind="strength_cardio">
-                  <h5>力量 + 有氧日</h5>
-                  <div class="training-volume-pair">
-                    <div class="field">
-                      <label for="comboStrengthMinutes">力量</label>
-                      <input id="comboStrengthMinutes" name="comboStrengthMinutes" type="number" min="0" max="180" step="5" value="45" inputmode="numeric">
-                    </div>
-                    <div class="field">
-                      <label for="comboCardioMinutes">有氧</label>
-                      <input id="comboCardioMinutes" name="comboCardioMinutes" type="number" min="0" max="180" step="5" value="25" inputmode="numeric">
-                    </div>
-                  </div>
+              <div class="weekly-training-grid" aria-label="填写一周运动安排">
+                <div class="field">
+                  <label for="weeklyTrainingPlan">这一周大概怎么安排</label>
+                  <select id="weeklyTrainingPlan" name="weeklyTrainingPlan">
+                    <option value="none">暂时不运动</option>
+                    <option value="light">每周 1-2 次轻运动</option>
+                    <option value="regular" selected>每周 3-4 次规律训练</option>
+                    <option value="frequent">每周 5 次以上高频训练</option>
+                    <option value="flexible">不固定，球类 / 户外为主</option>
+                  </select>
                 </div>
-                <div class="training-volume-card" data-workout-kind="strength">
-                  <h5>纯力量日</h5>
+                <div class="weekly-training-detail" id="weeklyTrainingDetail">
                   <div class="field">
-                    <label for="strengthMinutes">力量训练</label>
-                    <input id="strengthMinutes" name="strengthMinutes" type="number" min="0" max="180" step="5" value="60" inputmode="numeric">
+                    <label for="weeklyTrainingType">主要怎么练</label>
+                    <select id="weeklyTrainingType" name="weeklyTrainingType">
+                      <option value="strength_cardio" selected>力量 + 有氧</option>
+                      <option value="strength">主要力量训练</option>
+                      <option value="leg">练腿比较多</option>
+                      <option value="cardio">有氧 / 跑步 / 球类 / 户外</option>
+                    </select>
                   </div>
                 </div>
-                <div class="training-volume-card" data-workout-kind="cardio">
-                  <h5>纯有氧日</h5>
+                <div class="weekly-training-detail" id="weeklyTrainingTime">
                   <div class="field">
-                    <label for="cardioMinutes">有氧</label>
-                    <input id="cardioMinutes" name="cardioMinutes" type="number" min="0" max="180" step="5" value="40" inputmode="numeric">
+                    <label for="weeklyTrainingMinutes">每次大约多久</label>
+                    <select id="weeklyTrainingMinutes" name="weeklyTrainingMinutes">
+                      <option value="20">20 分钟</option>
+                      <option value="30">30 分钟</option>
+                      <option value="45">45 分钟</option>
+                      <option value="60" selected>60 分钟</option>
+                      <option value="75">75 分钟</option>
+                      <option value="90">90 分钟</option>
+                      <option value="120">120 分钟</option>
+                    </select>
                   </div>
                 </div>
-                <div class="training-volume-card" data-workout-kind="leg">
-                  <h5>练腿日</h5>
-                  <div class="field">
-                    <label for="legMinutes">练腿</label>
-                    <input id="legMinutes" name="legMinutes" type="number" min="0" max="180" step="5" value="60" inputmode="numeric">
-                  </div>
+                <div class="field full weekly-training-detail" id="weeklyTrainingNoteWrap">
+                  <label for="weeklyTrainingNote">一周计划补充，可不填</label>
+                  <input id="weeklyTrainingNote" name="weeklyTrainingNote" type="text" placeholder="例：周一力量+有氧，周三练腿，周五有氧">
                 </div>
-                <div class="rest-day-note" data-workout-kind="rest">
-                  <strong>休息日</strong>
-                  <span>不用填时间，自动按少主食、多蔬菜、蛋白不减生成。</span>
+                <div class="weekly-training-note full" id="weeklyTrainingRestNote" hidden>
+                  <strong>按不运动 / 休息日生成</strong>
+                  不需要填写时间，食谱会自动减少主食一点，蛋白和蔬菜保留。
                 </div>
               </div>
-              <div class="hint">选到对应模式后，只显示要填的时间。休息日不用填时间。</div>
+              <div class="hint">这里只填大概情况，不用每天重新选择。后面食谱会按训练量调整主食和蛋白。</div>
             </div>
 
             <div class="setup-block pantry-groups compact-pantry" aria-label="食材选择">
@@ -2839,8 +2819,13 @@
     const addSupplementBtn = document.querySelector("#addSupplementBtn");
     const selectedSupplementTags = document.querySelector("#selectedSupplementTags");
     const selectedSupplementsStore = document.querySelector("#selectedSupplementsStore");
-    const workoutModeSelect = document.querySelector("#workoutMode");
-    const workoutPanels = document.querySelectorAll("[data-workout-kind]");
+    const weeklyTrainingPlanSelect = document.querySelector("#weeklyTrainingPlan");
+    const weeklyTrainingTypeSelect = document.querySelector("#weeklyTrainingType");
+    const weeklyTrainingMinutesSelect = document.querySelector("#weeklyTrainingMinutes");
+    const weeklyTrainingDetail = document.querySelector("#weeklyTrainingDetail");
+    const weeklyTrainingTime = document.querySelector("#weeklyTrainingTime");
+    const weeklyTrainingNoteWrap = document.querySelector("#weeklyTrainingNoteWrap");
+    const weeklyTrainingRestNote = document.querySelector("#weeklyTrainingRestNote");
     const formError = document.querySelector("#formError");
     const checkinDate = document.querySelector("#checkinDate");
     const checkinWeight = document.querySelector("#checkinWeight");
@@ -2988,17 +2973,36 @@
       button.innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>${escapeHtml(text)}`;
     }
 
-    function updateWorkoutModeView() {
-      if (!workoutModeSelect) return;
-      const mode = workoutModeSelect.value || "strength_cardio";
-      workoutPanels.forEach(panel => {
-        const kind = panel.dataset.workoutKind;
-        const show =
-          mode === "rest"
-            ? kind === "rest"
-            : mode === kind || (mode === "strength_cardio" && kind === "strength_cardio");
-        panel.hidden = !show;
+    function updateWeeklyTrainingView() {
+      if (!weeklyTrainingPlanSelect) return;
+      const isRest = weeklyTrainingPlanSelect.value === "none";
+      [weeklyTrainingDetail, weeklyTrainingTime, weeklyTrainingNoteWrap].forEach(panel => {
+        if (panel) panel.hidden = isRest;
       });
+      if (weeklyTrainingRestNote) weeklyTrainingRestNote.hidden = !isRest;
+    }
+
+    function getWeeklyTrainingProfile(formData) {
+      const weeklyTrainingPlan = formData.get("weeklyTrainingPlan") || "regular";
+      const weeklyTrainingType = formData.get("weeklyTrainingType") || "strength_cardio";
+      const weeklyTrainingMinutes = readNumberWithZero(formData, "weeklyTrainingMinutes", 60);
+      const isRest = weeklyTrainingPlan === "none";
+      const workoutMode = isRest ? "rest" : weeklyTrainingType;
+      const minutes = isRest ? 0 : clamp(weeklyTrainingMinutes, 0, 180);
+      const comboStrengthMinutes = workoutMode === "strength_cardio" ? Math.round(minutes * .65) : 0;
+      const comboCardioMinutes = workoutMode === "strength_cardio" ? minutes - comboStrengthMinutes : 0;
+      return {
+        weeklyTrainingPlan,
+        weeklyTrainingType,
+        weeklyTrainingMinutes: minutes,
+        weeklyTrainingNote: formData.get("weeklyTrainingNote") || "",
+        workoutMode,
+        comboStrengthMinutes,
+        comboCardioMinutes,
+        strengthMinutes: workoutMode === "strength" ? minutes : 0,
+        cardioMinutes: workoutMode === "cardio" ? minutes : 0,
+        legMinutes: workoutMode === "leg" ? minutes : 0
+      };
     }
 
     function setFormError(message) {
@@ -3050,13 +3054,11 @@
         if (!Number.isFinite(weight) || weight < 35 || weight > 220) return "请填写有效体重，单位是 kg。";
       }
       if (step === 1) {
-        const strengthMinutes = Number(data.get("strengthMinutes"));
-        const cardioMinutes = Number(data.get("cardioMinutes"));
-        const legMinutes = Number(data.get("legMinutes"));
-        const comboStrengthMinutes = Number(data.get("comboStrengthMinutes"));
-        const comboCardioMinutes = Number(data.get("comboCardioMinutes"));
-        const minutes = [comboStrengthMinutes, comboCardioMinutes, strengthMinutes, cardioMinutes, legMinutes];
-        if (minutes.some(value => !Number.isFinite(value) || value < 0 || value > 180)) return "运动分钟数请填写 0-180 之间的数字。";
+        const weeklyTrainingPlan = data.get("weeklyTrainingPlan") || "regular";
+        const weeklyTrainingMinutes = Number(data.get("weeklyTrainingMinutes"));
+        if (weeklyTrainingPlan !== "none" && (!Number.isFinite(weeklyTrainingMinutes) || weeklyTrainingMinutes < 5 || weeklyTrainingMinutes > 180)) {
+          return "请选择每次运动的大概时间。";
+        }
         const typedIngredients = String(data.get("ingredients") || "").trim();
         if (!selectedFoods.length && !typedIngredients) return "请至少在食材与训练档案里添加一种食材，或手写补充食材。";
         if (data.get("foodConfirmed") !== "yes") return "请先勾选“我确认家里的食材已经填完”，再生成食谱。";
@@ -3095,15 +3097,25 @@
       document.querySelector("#age").value = data.age || 28;
       document.querySelector("#height").value = data.height || 175;
       document.querySelector("#weight").value = data.weight || 77;
-      if (workoutModeSelect) {
-        workoutModeSelect.value = data.workoutMode || "strength_cardio";
+      const savedWorkoutMode = data.workoutMode || "strength_cardio";
+      if (weeklyTrainingPlanSelect) {
+        weeklyTrainingPlanSelect.value = data.weeklyTrainingPlan || (savedWorkoutMode === "rest" ? "none" : "regular");
       }
-      updateWorkoutModeView();
-      document.querySelector("#comboStrengthMinutes").value = data.comboStrengthMinutes ?? data.strengthMinutes ?? 45;
-      document.querySelector("#comboCardioMinutes").value = data.comboCardioMinutes ?? data.cardioMinutes ?? 25;
-      document.querySelector("#strengthMinutes").value = data.strengthMinutes ?? 45;
-      document.querySelector("#cardioMinutes").value = data.cardioMinutes ?? 25;
-      document.querySelector("#legMinutes").value = data.legMinutes ?? 60;
+      if (weeklyTrainingTypeSelect) weeklyTrainingTypeSelect.value = data.weeklyTrainingType || (savedWorkoutMode === "rest" ? "strength_cardio" : savedWorkoutMode);
+      if (weeklyTrainingMinutesSelect) {
+        const savedMinutes =
+          data.weeklyTrainingMinutes ||
+          data.strengthMinutes ||
+          data.cardioMinutes ||
+          data.legMinutes ||
+          ((Number(data.comboStrengthMinutes) || 0) + (Number(data.comboCardioMinutes) || 0)) ||
+          60;
+        const minuteOptions = [20, 30, 45, 60, 75, 90, 120];
+        const nearestMinutes = minuteOptions.reduce((best, item) => Math.abs(item - savedMinutes) < Math.abs(best - savedMinutes) ? item : best, 60);
+        weeklyTrainingMinutesSelect.value = String(nearestMinutes);
+      }
+      document.querySelector("#weeklyTrainingNote").value = data.weeklyTrainingNote || "";
+      updateWeeklyTrainingView();
       document.querySelector("#meals").value = data.meals || "3";
       document.querySelector("#ingredients").value = data.typedIngredients || data.ingredients || "";
       setSelectedFoods(data.selectedFoods || []);
@@ -4004,6 +4016,7 @@
       const chosenFoods = getSelectedFoods();
       const typedIngredients = data.get("ingredients") || "";
       const cooking = data.get("cooking") || "home_all";
+      const trainingProfile = getWeeklyTrainingProfile(data);
       const ingredients = [...chosenFoods, typedIngredients]
         .map(item => String(item).trim())
         .filter(Boolean)
@@ -4016,12 +4029,7 @@
         weight: readNumber(data, "weight", 77),
         activity: 1.375,
         trainingTime: "none",
-        comboStrengthMinutes: readNumberWithZero(data, "comboStrengthMinutes", 45),
-        comboCardioMinutes: readNumberWithZero(data, "comboCardioMinutes", 25),
-        strengthMinutes: readNumberWithZero(data, "strengthMinutes", 45),
-        cardioMinutes: readNumberWithZero(data, "cardioMinutes", 25),
-        legMinutes: readNumberWithZero(data, "legMinutes", 60),
-        workoutMode: data.get("workoutMode") || "strength_cardio",
+        ...trainingProfile,
         meals: data.get("meals"),
         ingredients,
         typedIngredients,
@@ -4273,9 +4281,9 @@
 
     bindChoiceLabels();
     bindPantryControls();
-    updateWorkoutModeView();
-    if (workoutModeSelect) {
-      workoutModeSelect.addEventListener("change", updateWorkoutModeView);
+    updateWeeklyTrainingView();
+    if (weeklyTrainingPlanSelect) {
+      weeklyTrainingPlanSelect.addEventListener("change", updateWeeklyTrainingView);
     }
 
     leadForm.addEventListener("submit", async event => {
