@@ -1584,6 +1584,28 @@
       color: #fff7ed;
     }
 
+    .detail-plan {
+      border: 1px solid rgba(255, 255, 255, .24);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .94);
+      color: var(--text);
+      padding: 16px;
+    }
+
+    .detail-plan h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    .detail-plan ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .detail-plan li + li {
+      margin-top: 8px;
+    }
+
     .upgrade-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2674,8 +2696,8 @@
         <article class="card lead-card">
           <div class="card-head">
             <div>
-              <h2>领取详细版食谱</h2>
-              <p id="leadCopy">免费版包含基础食谱、运动日切换、换餐和打卡。这里是留下联系方式，不会立刻解锁付费内容。</p>
+              <h2>生成详细执行计划</h2>
+              <p id="leadCopy">免费版包含基础食谱、运动日切换、换餐和打卡。提交后会先展示一份试用版执行计划，联系方式可选。</p>
             </div>
           </div>
           <div class="card-body">
@@ -2704,8 +2726,8 @@
               <input id="leadName" name="leadName" autocomplete="name" placeholder="例如：小李">
             </div>
             <div class="field">
-              <label for="leadContact">联系方式</label>
-              <input id="leadContact" name="leadContact" autocomplete="tel" placeholder="微信/手机号/邮箱">
+              <label for="leadContact">联系方式（可选）</label>
+              <input id="leadContact" name="leadContact" autocomplete="tel" placeholder="微信/手机号/邮箱，可不填">
             </div>
             <div class="field">
               <label for="leadNeed">想领取的内容</label>
@@ -2718,11 +2740,14 @@
             <div class="field" style="align-self:end;">
               <button class="btn" type="submit">
                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>
-                提交领取需求
+                生成详细执行计划
               </button>
             </div>
             <div class="field full">
-              <div class="lead-status" id="leadStatus">填写联系方式后点击提交，我会后续联系你发送详细版计划。</div>
+              <div class="lead-status" id="leadStatus">点击后会在网页里直接显示试用版执行计划。想后续收到更完整版本时再填写联系方式。</div>
+            </div>
+            <div class="field full">
+              <div class="detail-plan" id="detailPlanUnlock" hidden></div>
             </div>
           </form>
         </article>
@@ -2834,6 +2859,7 @@
     const howToEat = document.querySelector("#howToEat");
     const leadStatus = document.querySelector("#leadStatus");
     const leadCopy = document.querySelector("#leadCopy");
+    const detailPlanUnlock = document.querySelector("#detailPlanUnlock");
     const paidPreview = document.querySelector("#paidPreview");
     const wizardSteps = document.querySelectorAll(".wizard-step");
     const progressSteps = document.querySelectorAll(".progress-step");
@@ -3597,6 +3623,40 @@
       ];
     }
 
+    function buildTrialExecutionPlan(lead) {
+      if (!currentPlan) return [];
+      const data = currentPlan.data;
+      const targets = currentPlan.targets;
+      const activeMode = currentPlan.activeWorkoutMode || data.workoutMode || "strength_cardio";
+      const workoutProfile = workoutNutritionProfile(activeMode, data);
+      const goalText = targets.goalLabel || "当前目标";
+      const trainingText = workoutProfile.label || "当前训练日";
+      const contactText = lead.contact && lead.contact !== "未留联系方式"
+        ? "你已留下联系方式，后续可以继续接收完整版本。"
+        : "你没有留下联系方式，这份计划只在当前页面显示，建议截图保存。";
+
+      return [
+        `执行周期：先按当前基础食谱稳定吃 3 天，不要每天换方案；目标是 ${goalText}，每日约 ${targets.targetKcal} kcal。`,
+        `训练日吃法：${trainingText} 时，午餐主食按表格吃足；如果当天练腿或训练量大，午餐主食可比休息日多半拳到 1 拳。`,
+        "休息日吃法：蛋白不减，晚餐主食减少半拳到 1 拳，蔬菜保持 2 拳以上，避免用零食补热量。",
+        "外卖吃法：优先点一份肉蛋/蛋白、半到一份主食、双份蔬菜；酱汁另放，奶茶、炸物、肥肉不要算进这套方案。",
+        "打卡调整：连续 3 天早上体重和状态都记录下来；先看趋势，不要因为一天波动马上改食谱。",
+        contactText
+      ];
+    }
+
+    function renderTrialExecutionPlan(lead) {
+      const items = buildTrialExecutionPlan(lead);
+      if (!detailPlanUnlock || !items.length) return;
+      detailPlanUnlock.innerHTML = `
+        <h3>试用版详细执行计划</h3>
+        <ul>
+          ${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}
+        </ul>
+      `;
+      detailPlanUnlock.hidden = false;
+    }
+
     function buildSupplementAdvice(supplements) {
       const selected = supplements.map(item => supplementLabels[item]).filter(Boolean);
       if (!selected.length) return "补剂：未选择补剂，先把正餐、蛋白和睡眠做好。";
@@ -3986,7 +4046,11 @@
       renderPaidPreview();
       renderList(howToEat, buildHowToEat(data, targets));
       renderCheckins();
-      leadCopy.textContent = "免费版已生成基础食谱、运动日切换、换餐和打卡。这里是留下联系方式，后续再领取 7-14 天详细计划。";
+      leadCopy.textContent = "免费版已生成基础食谱、运动日切换、换餐和打卡。提交后会直接显示一份试用版执行计划。";
+      if (detailPlanUnlock) {
+        detailPlanUnlock.hidden = true;
+        detailPlanUnlock.innerHTML = "";
+      }
       saveLocal("fitMealPlannerLast", JSON.stringify({ ...data, generatedAt: Date.now() }));
       setStep(2);
       showPage("result");
@@ -4123,6 +4187,10 @@
       mealList.hidden = true;
       emptyState.hidden = false;
       howToEat.innerHTML = "";
+      if (detailPlanUnlock) {
+        detailPlanUnlock.hidden = true;
+        detailPlanUnlock.innerHTML = "";
+      }
       ["targetKcal", "proteinTarget", "carbTarget", "fatTarget"].forEach(id => {
         document.querySelector(`#${id}`).textContent = "--";
       });
@@ -4181,27 +4249,24 @@
       const data = new FormData(leadForm);
       const lead = {
         name: data.get("leadName") || "未填写称呼",
-        contact: data.get("leadContact") || "未填写联系方式",
+        contact: data.get("leadContact") || "未留联系方式",
         need: data.get("leadNeed"),
         createdAt: new Date().toISOString(),
         planGoal: currentPlan ? currentPlan.targets.goalLabel : "未生成方案"
       };
-      if (!String(lead.contact).trim() || lead.contact === "未填写联系方式") {
-        setLeadStatus("请先填写联系方式，方便后续发送详细版食谱。", "error");
-        return;
-      }
 
       const submitButton = leadForm.querySelector("button[type='submit']");
-      setLeadButton(submitButton, "正在提交...", true);
-      setLeadStatus("正在提交，请稍等。");
+      setLeadButton(submitButton, "正在生成...", true);
+      setLeadStatus("正在生成试用版执行计划，请稍等。");
 
       try {
         await submitLeadToBackend(lead);
-        setLeadStatus(`已提交成功：${lead.name} / ${lead.need}。后续会按这个联系方式通知你。`, "success");
+        renderTrialExecutionPlan(lead);
+        setLeadStatus(`已生成试用版执行计划：${lead.name} / ${lead.need}。`, "success");
         leadForm.reset();
-        setLeadButton(submitButton, "已提交成功", true);
+        setLeadButton(submitButton, "已生成计划", true);
         window.setTimeout(() => {
-          setLeadButton(submitButton, "提交领取需求", false);
+          setLeadButton(submitButton, "生成详细执行计划", false);
         }, 3500);
       } catch (error) {
         let leads = [];
@@ -4213,9 +4278,10 @@
         }
         leads.push(lead);
         saveLocal("fitMealPlannerLeads", JSON.stringify(leads));
-        setLeadStatus(`暂时没有连上云端，已先保存在本机。请截图或稍后再试：${lead.name} / ${lead.need}`, "error");
+        renderTrialExecutionPlan(lead);
+        setLeadStatus(`云端暂时没连上，但已在本页生成试用版执行计划。建议截图保存：${lead.name} / ${lead.need}`, "error");
         leadForm.reset();
-        setLeadButton(submitButton, "提交领取需求", false);
+        setLeadButton(submitButton, "生成详细执行计划", false);
       }
     });
 
