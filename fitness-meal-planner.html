@@ -912,6 +912,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      min-height: 28px;
     }
 
     .setup-block-title h4 {
@@ -1031,10 +1032,6 @@
       display: grid;
       grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
       gap: 10px;
-    }
-
-    .quick-preset {
-      max-width: 220px;
     }
 
     .form-error {
@@ -2292,10 +2289,14 @@
                     <label for="weeklyTrainingMinutes">每次大约多久</label>
                     <select id="weeklyTrainingMinutes" name="weeklyTrainingMinutes">
                       <option value="30">30 分钟</option>
-                      <option value="45">45 分钟</option>
+                      <option value="40">40 分钟</option>
+                      <option value="50">50 分钟</option>
                       <option value="60" selected>60 分钟</option>
-                      <option value="75">75 分钟</option>
+                      <option value="70">70 分钟</option>
+                      <option value="80">80 分钟</option>
                       <option value="90">90 分钟</option>
+                      <option value="100">100 分钟</option>
+                      <option value="110">110 分钟</option>
                       <option value="120">120 分钟</option>
                     </select>
                   </div>
@@ -2315,12 +2316,7 @@
             <div class="setup-block pantry-groups compact-pantry" aria-label="食材选择">
               <div class="setup-block-title">
                 <h4>添加食材</h4>
-                <select class="quick-preset" id="ingredientPreset" aria-label="快捷模板">
-                  <option value="">快捷模板</option>
-                  <option value="home">家常减脂</option>
-                  <option value="student">学生宿舍</option>
-                  <option value="takeout">外卖辅助</option>
-                </select>
+                <span>选完点添加</span>
               </div>
 
               <div class="pantry-select-grid">
@@ -2415,7 +2411,7 @@
 
             <div class="setup-block compact-rules">
               <div class="setup-block-title">
-                <h4>吃法和限制</h4>
+                <h4>吃法限制</h4>
                 <span>让食谱更贴近日常</span>
               </div>
               <div class="mini-selects">
@@ -2825,7 +2821,6 @@
     const paidPreview = document.querySelector("#paidPreview");
     const wizardSteps = document.querySelectorAll(".wizard-step");
     const progressSteps = document.querySelectorAll(".progress-step");
-    const ingredientPreset = document.querySelector("#ingredientPreset");
     const welcomePage = document.querySelector("#welcomePage");
     const startPage = document.querySelector("#startPage");
     const resultPage = document.querySelector("#resultPage");
@@ -3007,7 +3002,7 @@
       const weeklyTrainingMinutes = readNumberWithZero(formData, "weeklyTrainingMinutes", 60);
       const isRest = weeklyTrainingPlan === "none";
       const workoutMode = isRest ? "rest" : weeklyTrainingType;
-      const minutes = isRest ? 0 : clamp(weeklyTrainingMinutes, 0, 180);
+      const minutes = isRest ? 0 : clamp(weeklyTrainingMinutes, 0, 120);
       const comboStrengthMinutes = workoutMode === "strength_cardio" ? Math.round(minutes * .65) : 0;
       const comboCardioMinutes = workoutMode === "strength_cardio" ? minutes - comboStrengthMinutes : 0;
       return {
@@ -3075,7 +3070,7 @@
       if (step === 1) {
         const weeklyTrainingPlan = data.get("weeklyTrainingPlan") || "regular";
         const weeklyTrainingMinutes = Number(data.get("weeklyTrainingMinutes"));
-        if (weeklyTrainingPlan !== "none" && (!Number.isFinite(weeklyTrainingMinutes) || weeklyTrainingMinutes < 30 || weeklyTrainingMinutes > 180)) {
+        if (weeklyTrainingPlan !== "none" && (!Number.isFinite(weeklyTrainingMinutes) || weeklyTrainingMinutes < 30 || weeklyTrainingMinutes > 120)) {
           return "请选择每次运动的大概时间。";
         }
         const typedIngredients = String(data.get("ingredients") || "").trim();
@@ -3129,7 +3124,7 @@
           data.legMinutes ||
           ((Number(data.comboStrengthMinutes) || 0) + (Number(data.comboCardioMinutes) || 0)) ||
           60;
-        const minuteOptions = [30, 45, 60, 75, 90, 120];
+        const minuteOptions = [30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
         const nearestMinutes = minuteOptions.reduce((best, item) => Math.abs(item - savedMinutes) < Math.abs(best - savedMinutes) ? item : best, 60);
         weeklyTrainingMinutesSelect.value = String(nearestMinutes);
       }
@@ -4218,17 +4213,6 @@
     paidPreview.addEventListener("click", event => {
       const button = event.target.closest ? event.target.closest("[data-locked-feature]") : null;
       if (button) showLockedFeature(button.dataset.lockedFeature);
-    });
-
-    ingredientPreset.addEventListener("change", () => {
-      const presets = {
-        home: ["鸡胸肉", "鸡蛋", "糙米", "西兰花", "番茄", "香蕉", "橄榄油"],
-        student: ["鸡蛋", "燕麦", "脱脂奶", "香蕉", "黄瓜", "魔芋"],
-        takeout: ["鸡蛋", "蛋白粉", "米饭", "生菜", "番茄", "黄瓜"]
-      };
-      if (!ingredientPreset.value) return;
-      setSelectedFoods(presets[ingredientPreset.value] || []);
-      ingredientPreset.value = "";
     });
 
     document.querySelector("#resetBtn").addEventListener("click", () => {
