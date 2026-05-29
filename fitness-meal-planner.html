@@ -411,6 +411,16 @@
       display: none;
     }
 
+    #weeklyTrainingNoteWrap {
+      border-color: rgba(245, 158, 11, .58);
+      background: #fff8eb;
+    }
+
+    #weeklyTrainingNoteWrap label {
+      color: #92400e;
+      font-weight: 900;
+    }
+
     .weekly-training-note {
       border: 1px solid var(--line-strong);
       border-radius: 8px;
@@ -616,7 +626,7 @@
     }
 
     .compact-step .tag-cloud {
-      max-height: 62px;
+      max-height: 78px;
       overflow: hidden;
     }
 
@@ -964,18 +974,29 @@
     }
 
     .selected-pantry {
-      border: 1px solid var(--line-strong);
+      border: 2px solid var(--primary);
       border-radius: 8px;
-      background: rgba(247, 250, 246, .84);
+      background: #eefaf6;
       padding: 12px;
       display: grid;
       gap: 10px;
+      box-shadow: 0 10px 22px rgba(15, 118, 110, .12);
     }
 
     .selected-pantry h4 {
       margin: 0;
-      font-size: 17px;
+      color: var(--primary-dark);
+      font-size: 18px;
       letter-spacing: 0;
+    }
+
+    .selected-pantry .tag-cloud {
+      min-height: 46px;
+      border: 1px dashed rgba(15, 118, 110, .42);
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px;
+      align-items: center;
     }
 
     .food-token {
@@ -2247,8 +2268,7 @@
               </div>
               <div class="weekly-training-grid" aria-label="填写一周运动安排">
                 <div class="field">
-                  <label for="weeklyTrainingPlan">这一周大概怎么安排</label>
-                  <select id="weeklyTrainingPlan" name="weeklyTrainingPlan">
+                  <select id="weeklyTrainingPlan" name="weeklyTrainingPlan" aria-label="一周运动安排">
                     <option value="none">暂时不运动</option>
                     <option value="light">每周 1-2 次轻运动</option>
                     <option value="regular" selected>每周 3-4 次规律训练</option>
@@ -2271,7 +2291,6 @@
                   <div class="field">
                     <label for="weeklyTrainingMinutes">每次大约多久</label>
                     <select id="weeklyTrainingMinutes" name="weeklyTrainingMinutes">
-                      <option value="20">20 分钟</option>
                       <option value="30">30 分钟</option>
                       <option value="45">45 分钟</option>
                       <option value="60" selected>60 分钟</option>
@@ -2282,8 +2301,8 @@
                   </div>
                 </div>
                 <div class="field full weekly-training-detail" id="weeklyTrainingNoteWrap">
-                  <label for="weeklyTrainingNote">一周计划补充，可不填</label>
-                  <input id="weeklyTrainingNote" name="weeklyTrainingNote" type="text" placeholder="例：周一力量+有氧，周三练腿，周五有氧">
+                  <label for="weeklyTrainingNote">如没有选项的内容，请手写</label>
+                  <input id="weeklyTrainingNote" name="weeklyTrainingNote" type="text" placeholder="比如：周一力量+有氧，周三练腿，周五踢球">
                 </div>
                 <div class="weekly-training-note full" id="weeklyTrainingRestNote" hidden>
                   <strong>按不运动 / 休息日生成</strong>
@@ -2380,7 +2399,7 @@
               </div>
 
               <div class="selected-pantry">
-                <h4>已选食材</h4>
+                <h4>已选食材，请确认</h4>
                 <div class="tag-cloud" id="selectedFoodTags">
                   <span class="tag warn">还没添加食材</span>
                 </div>
@@ -3056,7 +3075,7 @@
       if (step === 1) {
         const weeklyTrainingPlan = data.get("weeklyTrainingPlan") || "regular";
         const weeklyTrainingMinutes = Number(data.get("weeklyTrainingMinutes"));
-        if (weeklyTrainingPlan !== "none" && (!Number.isFinite(weeklyTrainingMinutes) || weeklyTrainingMinutes < 5 || weeklyTrainingMinutes > 180)) {
+        if (weeklyTrainingPlan !== "none" && (!Number.isFinite(weeklyTrainingMinutes) || weeklyTrainingMinutes < 30 || weeklyTrainingMinutes > 180)) {
           return "请选择每次运动的大概时间。";
         }
         const typedIngredients = String(data.get("ingredients") || "").trim();
@@ -3110,7 +3129,7 @@
           data.legMinutes ||
           ((Number(data.comboStrengthMinutes) || 0) + (Number(data.comboCardioMinutes) || 0)) ||
           60;
-        const minuteOptions = [20, 30, 45, 60, 75, 90, 120];
+        const minuteOptions = [30, 45, 60, 75, 90, 120];
         const nearestMinutes = minuteOptions.reduce((best, item) => Math.abs(item - savedMinutes) < Math.abs(best - savedMinutes) ? item : best, 60);
         weeklyTrainingMinutesSelect.value = String(nearestMinutes);
       }
