@@ -2156,16 +2156,15 @@
 
         <form class="form" id="plannerForm">
           <div class="wizard-progress" aria-label="填写进度">
-            <div class="progress-step active" data-progress="0"><b>1</b>目标</div>
-            <div class="progress-step" data-progress="1"><b>2</b>资料</div>
-            <div class="progress-step" data-progress="2"><b>3</b>食材与运动</div>
+            <div class="progress-step active" data-progress="0"><b>1</b>目标与资料</div>
+            <div class="progress-step" data-progress="1"><b>2</b>食材与运动</div>
           </div>
 
           <section class="wizard-step active" data-step="0">
             <div class="step-title">
               <div>
-                <h3>选择你的主线任务</h3>
-                <p>先选一个方向，后面的热量和食材比例会跟着变。</p>
+                <h3>目标与基本资料</h3>
+                <p>先填最关键的信息，后面的食谱会按这个基础生成。</p>
               </div>
               <span class="level-badge">第 1 关</span>
             </div>
@@ -2203,27 +2202,6 @@
               </label>
             </div>
 
-            <div class="form-actions">
-              <button class="btn primary next-step" type="button" data-next="1">
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
-                下一步
-              </button>
-              <button class="btn" type="button" id="resetBtn" title="清空输入">
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-                清空
-              </button>
-            </div>
-          </section>
-
-          <section class="wizard-step" data-step="1">
-            <div class="step-title">
-              <div>
-                <h3>填写角色属性</h3>
-                <p>可以自己输入，也可以点输入框右侧选择常见值。</p>
-              </div>
-              <span class="level-badge">第 2 关</span>
-            </div>
-
             <div class="field-grid">
               <div class="field">
                 <label for="sex">性别</label>
@@ -2244,15 +2222,6 @@
                 <label for="weight">体重 kg</label>
                 <input id="weight" name="weight" type="text" inputmode="decimal" list="weightOptions" value="77">
               </div>
-              <div class="field">
-                <label for="activity">日常活动量</label>
-                <select id="activity" name="activity">
-                  <option value="1.2">久坐少动：上班/上课坐着多</option>
-                  <option value="1.375" selected>普通走动：通勤、家务、偶尔散步</option>
-                  <option value="1.55">规律运动：健身房、跑步、骑车或球类</option>
-                  <option value="1.725">高活动：体力劳动、户外运动或高频球类</option>
-                </select>
-              </div>
             </div>
 
             <datalist id="ageOptions">
@@ -2266,24 +2235,24 @@
             </datalist>
 
             <div class="form-actions">
-              <button class="btn" type="button" data-prev="0">
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
-                上一步
-              </button>
-              <button class="btn primary next-step" type="button" data-next="2">
+              <button class="btn primary next-step" type="button" data-next="1">
                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
                 去填食材与运动
+              </button>
+              <button class="btn" type="button" id="resetBtn" title="清空输入">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                清空
               </button>
             </div>
           </section>
 
-          <section class="wizard-step compact-step" data-step="2">
+          <section class="wizard-step compact-step" data-step="1">
             <div class="step-title">
               <div>
                 <h3>食材与运动</h3>
                 <p>这里是生成食谱用的基础档案，不需要每天重复填写。</p>
               </div>
-              <span class="level-badge">第 3 关</span>
+              <span class="level-badge">第 2 关</span>
             </div>
 
             <div class="setup-block compact-workout">
@@ -2535,7 +2504,7 @@
             <input type="hidden" id="contactPrice" name="contactPrice" value="39">
 
             <div class="form-actions">
-              <button class="btn" type="button" data-prev="1">
+              <button class="btn" type="button" data-prev="0">
                 <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
                 上一步
               </button>
@@ -2930,7 +2899,7 @@
     function setStep(step) {
       currentStep = clamp(step, 0, wizardSteps.length - 1);
       setFormError("");
-      form.classList.toggle("compact-active", currentStep === 2);
+      form.classList.toggle("compact-active", currentStep === 1);
       wizardSteps.forEach(panel => {
         panel.classList.toggle("active", Number(panel.dataset.step) === currentStep);
       });
@@ -3055,7 +3024,7 @@
         if (!Number.isFinite(height) || height < 120 || height > 230) return "请填写有效身高，单位是 cm。";
         if (!Number.isFinite(weight) || weight < 35 || weight > 220) return "请填写有效体重，单位是 kg。";
       }
-      if (step === 2) {
+      if (step === 1) {
         const strengthMinutes = Number(data.get("strengthMinutes"));
         const cardioMinutes = Number(data.get("cardioMinutes"));
         const legMinutes = Number(data.get("legMinutes"));
@@ -3101,7 +3070,6 @@
       document.querySelector("#age").value = data.age || 28;
       document.querySelector("#height").value = data.height || 175;
       document.querySelector("#weight").value = data.weight || 77;
-      document.querySelector("#activity").value = String(data.activity || 1.375);
       document.querySelector("#comboStrengthMinutes").value = data.comboStrengthMinutes ?? data.strengthMinutes ?? 45;
       document.querySelector("#comboCardioMinutes").value = data.comboCardioMinutes ?? data.cardioMinutes ?? 25;
       document.querySelector("#strengthMinutes").value = data.strengthMinutes ?? 45;
@@ -4017,7 +3985,7 @@
         age: readNumber(data, "age", 28),
         height: readNumber(data, "height", 175),
         weight: readNumber(data, "weight", 77),
-        activity: readNumber(data, "activity", 1.375),
+        activity: 1.375,
         trainingTime: "none",
         comboStrengthMinutes: readNumberWithZero(data, "comboStrengthMinutes", 45),
         comboCardioMinutes: readNumberWithZero(data, "comboCardioMinutes", 25),
@@ -4041,16 +4009,16 @@
       const typedIngredients = String(dataForValidation.get("ingredients") || "").trim();
       if ((selectedFoods.length || typedIngredients) && dataForValidation.get("foodConfirmed") !== "yes") {
         showPage("start");
-        setStep(2);
+        setStep(1);
         setFormError("");
         showConfirmFoodModal();
         return;
       }
 
-      const message = validateStep(2);
+      const message = validateStep(1);
       if (message) {
         showPage("start");
-        setStep(2);
+        setStep(1);
         setFormError(message);
         return;
       }
@@ -4085,13 +4053,13 @@
         detailPlanUnlock.innerHTML = "";
       }
       saveLocal("fitMealPlannerLast", JSON.stringify({ ...data, generatedAt: Date.now() }));
-      setStep(2);
+      setStep(1);
       showPage("result");
     }
 
     form.addEventListener("submit", event => {
       event.preventDefault();
-      if (currentStep < 2) {
+      if (currentStep < 1) {
         trySetStep(currentStep + 1);
         return;
       }
